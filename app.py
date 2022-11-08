@@ -15,11 +15,12 @@ database_uri = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 db = SQLAlchemy(app)
 
+
 migrate = Migrate(app, db)
 
 
-from routes.index import index_blueprint
-from routes.users import users_blueprint
+from views.index import index_blueprint
+from views.users import users_blueprint
 
 app.register_blueprint(index_blueprint)
 app.register_blueprint(users_blueprint)

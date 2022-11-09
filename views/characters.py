@@ -42,3 +42,54 @@ def create_character():
             "message": "an error has occured when creating a new character"
         }
         return jsonify(response), 400
+
+
+# Get All Characters
+@characters_blueprint.post("/characters/get/all")
+def get_all_characters():
+    json_data = request.get_json()
+
+    try:
+        data = characters_schema.load(json_data)
+
+        all_characters = characters_schema.dump(Characters.query.filter(Characters.username == data["username"]),
+                                                many=True)
+
+        response = {
+            "message": "Got all characters",
+            "all_characters": all_characters
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting all characters"
+        }
+        return jsonify(response), 400
+
+
+# Delete Character
+@characters_blueprint.delete("/characters/delete")
+def delete_characters():
+    json_data = request.get_json()
+
+    try:
+        data = characters_schema.load(json_data)
+
+        Characters.query.filter(Characters.uuid == data["uuid"]).delete()
+        db.session.commit()
+
+        response = {
+            "message": "Character is deleted",
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when deleting the character"
+        }
+        return jsonify(response), 400

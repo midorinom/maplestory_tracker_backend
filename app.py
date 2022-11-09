@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 
+# Configs and declaring variables
 load_dotenv()
 
 app = Flask(__name__)
@@ -19,6 +20,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
+# Importing views
 from views.index import index_blueprint
 from views.users import users_blueprint
 

@@ -27,7 +27,7 @@ def submit():
             "new_student": new_student
         }
 
-        return jsonify(response)
+        return jsonify(response), 201
 
     except Exception as err:
         print(err)
@@ -36,5 +36,5 @@ def submit():
             "message": "an error has occured when creating a student"
         }
 
-        return jsonify(response)
+        return jsonify(response), 400
 

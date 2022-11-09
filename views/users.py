@@ -1,6 +1,6 @@
 from app import app, db
 from flask import request, jsonify, Blueprint
-from models.login.Users import Users, users_schema
+from models.users.Users import Users, users_schema
 from flask_bcrypt import Bcrypt
 
 
@@ -14,6 +14,7 @@ def register():
     json_data = request.get_json()
 
     try:
+        # Generate hash using bcrypt
         pw_hash = bcrypt.generate_password_hash(json_data["password"], 15).decode("utf-8")
 
         data = users_schema.load({
@@ -25,12 +26,9 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        db_new_user = users_schema.dump(Users.query.get(data["username"]))
         response = {
              "message": "User is created",
-             "new_user": db_new_user["username"]
          }
-
         return jsonify(response), 201
 
     except Exception as err:
@@ -39,7 +37,6 @@ def register():
         response = {
             "message": "an error has occured when creating a new user"
         }
-
         return jsonify(response), 400
 
 
@@ -49,6 +46,7 @@ def register_admin():
     json_data = request.get_json()
 
     try:
+        # Generate hash using bcrypt
         pw_hash = bcrypt.generate_password_hash(json_data["password"], 15).decode("utf-8")
 
         data = users_schema.load({
@@ -60,12 +58,9 @@ def register_admin():
         db.session.add(new_admin_user)
         db.session.commit()
 
-        db_new_admin_user = users_schema.dump(Users.query.get(data["username"]))
         response = {
             "message": "Admin user is created",
-            "new_admin_user": db_new_admin_user["username"]
         }
-
         return jsonify(response), 201
 
     except Exception as err:
@@ -74,13 +69,12 @@ def register_admin():
         response = {
             "message": "an error has occured when creating a new admin user"
         }
-
         return jsonify(response), 400
 
 
 # Login
 @users_blueprint.post("/users/login")
-async def login():
+def login():
     json_data = request.get_json()
 
     try:
@@ -94,7 +88,7 @@ async def login():
             return jsonify(response), 200
         else:
             response = {
-                "message": "Unauthorised, login failed",
+                "message": "Unauthorised, users failed",
             }
             return jsonify(response), 401
 
@@ -104,6 +98,4 @@ async def login():
         response = {
             "message": "an error has occured when logging in"
         }
-
         return jsonify(response), 400
-

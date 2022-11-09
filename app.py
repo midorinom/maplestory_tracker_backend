@@ -20,9 +20,9 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 
-# Importing views
-from views.index import index_blueprint
+# Register blueprints
+from models.Enums import enums_blueprint
 from views.users import users_blueprint
 
-app.register_blueprint(index_blueprint)
+app.register_blueprint(enums_blueprint)
 app.register_blueprint(users_blueprint)

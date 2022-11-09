@@ -19,10 +19,11 @@ def register():
 
         data = users_schema.load({
             "username": json_data["username"],
-            "pw_hash": pw_hash
+            "pw_hash": pw_hash,
+            "role": json_data["role"]
         })
 
-        new_user = Users(username=data["username"], pw_hash=pw_hash, role="NORMAL")
+        new_user = Users(username=data["username"], pw_hash=pw_hash, role=data["role"])
         db.session.add(new_user)
         db.session.commit()
 

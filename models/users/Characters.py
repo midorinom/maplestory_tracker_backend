@@ -13,7 +13,7 @@ class Characters(db.Model):
     level = db.Column(db.SMALLINT)
 
     def __init__(self, username, class_name, ign, level):
-        self. username = username
+        self.username = username
         self.class_name = class_name
         self.ign = ign
         self.level = level

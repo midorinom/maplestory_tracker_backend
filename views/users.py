@@ -1,9 +1,11 @@
-from app import db
+from app import app, db
 from flask import request, jsonify, Blueprint
 from models.login.Users import Users, users_schema
+from flask_bcrypt import Bcrypt
 
 
 users_blueprint = Blueprint("users", __name__)
+bcrypt = Bcrypt(app)
 
 
 # Register
@@ -12,17 +14,22 @@ def register():
     json_data = request.get_json()
 
     try:
-        data = users_schema.load(json_data)
+        pw_hash = bcrypt.generate_password_hash(json_data["password"], 15).decode("utf-8")
 
-        new_user = Users(username=data["username"], password=data["password"], role="NORMAL")
+        data = users_schema.load({
+            "username": json_data["username"],
+            "pw_hash": pw_hash
+        })
+
+        new_user = Users(username=data["username"], pw_hash=pw_hash, role="NORMAL")
         db.session.add(new_user)
         db.session.commit()
 
         db_new_user = users_schema.dump(Users.query.get(data["username"]))
         response = {
-            "message": "User is created",
-            "new_user": db_new_user
-        }
+             "message": "User is created",
+             "new_user": db_new_user["username"]
+         }
 
         return jsonify(response), 201
 
@@ -42,16 +49,21 @@ def register_admin():
     json_data = request.get_json()
 
     try:
-        data = users_schema.load(json_data)
+        pw_hash = bcrypt.generate_password_hash(json_data["password"], 15).decode("utf-8")
 
-        new_admin_user = Users(username=data["username"], password=data["password"], role="ADMIN")
+        data = users_schema.load({
+            "username": json_data["username"],
+            "pw_hash": pw_hash
+        })
+
+        new_admin_user = Users(username=data["username"], pw_hash=pw_hash, role="ADMIN")
         db.session.add(new_admin_user)
         db.session.commit()
 
         db_new_admin_user = users_schema.dump(Users.query.get(data["username"]))
         response = {
             "message": "Admin user is created",
-            "new_admin_user": db_new_admin_user
+            "new_admin_user": db_new_admin_user["username"]
         }
 
         return jsonify(response), 201
@@ -68,12 +80,13 @@ def register_admin():
 
 # Login
 @users_blueprint.post("/users/login")
-def login():
+async def login():
     json_data = request.get_json()
 
     try:
         user = users_schema.dump(Users.query.get(json_data["username"]))
-        if json_data["password"] == user["password"]:
+
+        if bcrypt.check_password_hash(user["pw_hash"], json_data["password"]):
             response = {
                 "message": "Login is successful",
                 "role": user["role"]

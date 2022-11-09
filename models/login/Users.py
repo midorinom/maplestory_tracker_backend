@@ -6,18 +6,18 @@ class Users(db.Model):
     __tablename__ = "users"
     username = db.Column(db.VARCHAR(20), primary_key=True)
     role = db.Column(db.VARCHAR(20), db.ForeignKey("roles_enum.roles"))
-    password = db.Column(db.VARCHAR(60))
+    pw_hash = db.Column(db.VARCHAR(60))
 
-    def __init__(self, username, role, password):
+    def __init__(self, username, role, pw_hash):
         self.username = username
         self.role = role
-        self.password = password
+        self.pw_hash = pw_hash
 
 
 class UsersSchema(Schema):
     username = fields.Str()
     role = fields.Str()
-    password = fields.Str()
+    pw_hash = fields.Str()
 
 
 users_schema = UsersSchema()

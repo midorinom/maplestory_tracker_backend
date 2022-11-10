@@ -52,8 +52,8 @@ def get_all_characters():
     try:
         data = characters_schema.load(json_data)
 
-        all_characters = characters_schema.dump(Characters.query.filter(Characters.username == data["username"]),
-                                                many=True)
+        all_characters = characters_schema.dump(Characters.query.order_by(Characters.level.desc()).filter(
+            Characters.username == data["username"]), many=True)
 
         response = {
             "message": "Got all characters",

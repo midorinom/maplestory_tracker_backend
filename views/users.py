@@ -100,3 +100,32 @@ def login():
             "message": "an error has occured when logging in"
         }
         return jsonify(response), 400
+
+
+# Update User
+@users_blueprint.patch("/users/update")
+def update_user():
+    json_data = request.get_json()
+
+    try:
+        data = users_schema.load(json_data)
+
+        Users.query.filter(Users.username == data["username"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "User is updated",
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating user"
+        }
+        return jsonify(response), 400

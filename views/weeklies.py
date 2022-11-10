@@ -14,26 +14,31 @@ def get_dailies():
     json_data = request.get_json()
 
     try:
-        # Convert from date to week
+        # Using today's date, get the first_day_of_week
         date_list = json_data["date"].split("-")
         date_list = [int(i) for i in date_list]
         date = datetime.date(*date_list)
-        week = date.isocalendar().week
+        # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date.
+        # The operation involving timedelta returns a datetime Object. strftime formats it back to a string.
+        first_day_of_week = (date + datetime.timedelta(days=-date.weekday())).strftime("%Y-%m-%d")
+        print(first_day_of_week)
 
-        # Change key in json_data from "date" to "week", then load json_data
-        json_data["week"] = json_data.pop("date")
-        json_data["week"] = week
+        # Change key in json_data from "date" to "first_day_of_week", then load json_data
+        json_data["first_day_of_week"] = json_data.pop("date")
+        json_data["first_day_of_week"] = first_day_of_week
+        print(json_data)
 
         data = weeklies_schema.load(json_data)
 
-        # Response object
+        # Response dictionary
         response = {
             "message": "Got weeklies",
         }
 
         # Check if there is an existing entry for this week. If so, add it to the response
         weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"],
-                                                              Weeklies.week == week), many=True)
+                                                              Weeklies.first_day_of_week == first_day_of_week),
+                                        many=True)
 
         if len(weeklies) > 0:
             response["weeklies"] = weeklies[0]
@@ -46,8 +51,17 @@ def get_dailies():
             index = 0
 
             if len(existing_weeklies) == 2:
-                # There are 2 existing entries. If the second element is the latest entry, set index to 1
-                if existing_weeklies[1]["week"] > existing_weeklies[0]["week"]:
+                # There are 2 existing entries. Check which one is the latest
+                date1_list = existing_weeklies[0]["first_day_of_week"].split("-")
+                date1_list = [int(i) for i in date1_list]
+                date1 = datetime.date(*date1_list)
+
+                date2_list = existing_weeklies[1]["first_day_of_week"].split("-")
+                date2_list = [int(i) for i in date2_list]
+                date2 = datetime.date(*date2_list)
+
+                # If the second element is the latest entry, set index to 1
+                if date2 > date1:
                     index = 1
 
                 # Delete the older entry
@@ -67,7 +81,7 @@ def get_dailies():
                 weeklies_list = "@".join(weeklies_default)
 
             # Make an entry for this week
-            new_weeklies = Weeklies(character=data["character"], week=week,
+            new_weeklies = Weeklies(character=data["character"], first_day_of_week=first_day_of_week,
                                     weeklies_list=weeklies_list)
             db.session.add(new_weeklies)
             db.session.commit()

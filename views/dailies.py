@@ -2,8 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.dailies.Dailies import Dailies, dailies_schema
 import datetime
-from models.NonRelational import DailiesDefault, dailies_default_schema
-import json
+from models.NonRelational import DailiesDefault
 
 
 dailies_blueprint = Blueprint("dailies", __name__)
@@ -17,7 +16,7 @@ def get_dailies():
     try:
         data = dailies_schema.load(json_data)
 
-        # Response object
+        # Response dictionary
         response = {
             "message": "Got dailies",
         }
@@ -36,7 +35,7 @@ def get_dailies():
             index = 0
 
             if len(existing_dailies) == 2:
-                # There are 2 existing entries. Check which one is the latest.
+                # There are 2 existing entries. Check which one is the latest
                 date1_list = existing_dailies[0]["date"].split("-")
                 date1_list = [int(i) for i in date1_list]
                 date1 = datetime.date(*date1_list)

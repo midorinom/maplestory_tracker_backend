@@ -8,21 +8,21 @@ class Weeklies(db.Model):
     __tablename__ = "weeklies"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
-    week = db.Column(db.SMALLINT)
+    first_day_of_week = db.Column(db.DATE)
     is_prev_week = db.Column(db.BOOLEAN, default=False)
     weeklies_list = db.Column(db.TEXT)
     weeklies_done = db.Column(db.TEXT, default="")
 
-    def __init__(self, character, week, weeklies_list):
+    def __init__(self, character, first_day_of_week, weeklies_list):
         self.character = character
-        self.week = week
+        self.first_day_of_week = first_day_of_week
         self.weeklies_list = weeklies_list
 
 
 class WeekliesSchema(Schema):
     uuid = fields.UUID()
     character = fields.UUID()
-    week = fields.Int()
+    first_day_of_week = fields.Date()
     is_prev_week = fields.Bool()
     weeklies_list = fields.Str()
     weeklies_done = fields.Str()

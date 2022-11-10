@@ -15,7 +15,7 @@ def get_ursus_tour():
     try:
         data = ursus_tour_schema.load(json_data)
 
-        # Response object
+        # Response dictionary
         response = {
             "message": "Got ursus_tour",
         }

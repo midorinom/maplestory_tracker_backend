@@ -51,14 +51,18 @@ def get_dailies():
                 Dailies.query.filter(Dailies.uuid == existing_dailies[0 if index == 1 else 1]["uuid"]).delete()
                 db.session.commit()
 
-            # If there are existing entries, set the latest existing entry to is_prev_day=True
+            # If there are existing entries, set the latest existing entry to is_prev_day=True. Also set dailies_list
             if len(existing_dailies) > 0:
                 Dailies.query.filter(Dailies.uuid == existing_dailies[index]["uuid"]).update({"is_prev_day": True})
                 db.session.commit()
 
+                dailies_list = existing_dailies[index]["dailies_list"]
+            else:
+                dailies_list = "test1@test2@test3"
+
             # Make an entry for today's date
             new_dailies = Dailies(character=data["character"], date=data["date"],
-                                  dailies_list="test1@test2@test3", dailies_done="test1@test2")
+                                  dailies_list=dailies_list)
             db.session.add(new_dailies)
             db.session.commit()
             response["dailies"] = dailies_schema.dump(new_dailies)

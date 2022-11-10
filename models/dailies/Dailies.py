@@ -11,13 +11,12 @@ class Dailies(db.Model):
     date = db.Column(db.DATE)
     is_prev_day = db.Column(db.BOOLEAN, default=False)
     dailies_list = db.Column(db.TEXT)
-    dailies_done = db.Column(db.TEXT)
+    dailies_done = db.Column(db.TEXT, default="")
 
-    def __init__(self, character, date, dailies_list, dailies_done):
+    def __init__(self, character, date, dailies_list):
         self.character = character
         self.date = date
         self.dailies_list = dailies_list
-        self.dailies_done = dailies_done
 
 
 class DailiesSchema(Schema):

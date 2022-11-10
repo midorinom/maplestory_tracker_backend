@@ -11,13 +11,12 @@ class Weeklies(db.Model):
     week = db.Column(db.SMALLINT)
     is_prev_week = db.Column(db.BOOLEAN, default=False)
     weeklies_list = db.Column(db.TEXT)
-    weeklies_done = db.Column(db.TEXT)
+    weeklies_done = db.Column(db.TEXT, default="")
 
-    def __init__(self, character, week, weeklies_list, weeklies_done):
+    def __init__(self, character, week, weeklies_list):
         self.character = character
         self.week = week
         self.weeklies_list = weeklies_list
-        self.weeklies_done = weeklies_done
 
 
 class WeekliesSchema(Schema):

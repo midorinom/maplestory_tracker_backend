@@ -13,6 +13,16 @@ def get_dailies():
     json_data = request.get_json()
 
     try:
+        # Convert from date to week
+        date_list = json_data["date"].split("-")
+        date_list = [int(i) for i in date_list]
+        date = datetime.date(*date_list)
+        week = date.isocalendar().week
+
+        # Change key in json_data from "date" to "week", then load json_data
+        json_data["week"] = json_data.pop("date")
+        json_data["week"] = week
+
         data = weeklies_schema.load(json_data)
 
         # Response object
@@ -20,49 +30,40 @@ def get_dailies():
             "message": "Got weeklies",
         }
 
-        # Check if there is an existing entry for today's date. If so, add it to the response
-        dailies = weeklies_schema.dump(Dailies.query.filter(Dailies.character == data["character"],
-                                                           Dailies.date == data["date"]), many=True)
-        if len(dailies) > 0:
-            response["dailies"] = dailies
+        # Check if there is an existing entry for this week. If so, add it to the response
+        weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"],
+                                                              Weeklies.week == week), many=True)
+
+        if len(weeklies) > 0:
+            response["weeklies"] = weeklies[0]
         else:
             # Look up the existing entries
-            existing_dailies = dailies_schema.dump(Dailies.query.filter(Dailies.character == data["character"]),
-                                                   many=True)
+            existing_weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"]),
+                                                     many=True)
 
             # Index will be 0 if there is only 1 existing entry
             index = 0
 
-            if len(existing_dailies) == 2:
-                # There are 2 existing entries. Check which one is the latest.
-                date1_list = existing_dailies[0]["date"].split("-")
-                date1_list = [int(i) for i in date1_list]
-                date1 = datetime.datetime(*date1_list)
-
-                date2_list = existing_dailies[1]["date"].split("-")
-                date2_list = [int(i) for i in date2_list]
-                date2 = datetime.datetime(*date2_list)
-                print(date2)
-
-                # If the second element is the latest entry, set index to 1
-                if date2 > date1:
+            if len(existing_weeklies) == 2:
+                # There are 2 existing entries. If the second element is the latest entry, set index to 1
+                if existing_weeklies[1]["week"] > existing_weeklies[0]["week"]:
                     index = 1
 
                 # Delete the older entry
-                Dailies.query.filter(Dailies.uuid == existing_dailies[0 if index == 1 else 1]["uuid"]).delete()
+                Weeklies.query.filter(Weeklies.uuid == existing_weeklies[0 if index == 1 else 1]["uuid"]).delete()
                 db.session.commit()
 
-            # If there are existing entries, set the latest existing entry to is_prev_day=True
-            if len(existing_dailies) > 0:
-                Dailies.query.filter(Dailies.uuid == existing_dailies[index]["uuid"]).update({"is_prev_day": True})
+            # If there are existing entries, set the latest existing entry to is_prev_week=True
+            if len(existing_weeklies) > 0:
+                Weeklies.query.filter(Weeklies.uuid == existing_weeklies[index]["uuid"]).update({"is_prev_week": True})
                 db.session.commit()
 
-            # Make an entry for today's date
-            new_dailies = Dailies(character=data["character"], date=data["date"],
-                                  dailies_list="test1@test2@test3", dailies_done="test1@test2")
-            db.session.add(new_dailies)
+            # Make an entry for this week
+            new_weeklies = Weeklies(character=data["character"], week=week,
+                                    weeklies_list="test1@test2@test3", weeklies_done="test1@test2")
+            db.session.add(new_weeklies)
             db.session.commit()
-            response["dailies"] = dailies_schema.dump(new_dailies)
+            response["weeklies"] = weeklies_schema.dump(new_weeklies)
 
         # Return response
         return jsonify(response), 200
@@ -71,6 +72,6 @@ def get_dailies():
         print(err)
 
         response = {
-            "message": "an error has occured when getting dailies, weeklies and ursus_tour"
+            "message": "an error has occured when getting weeklies"
         }
         return jsonify(response), 400

@@ -9,14 +9,13 @@ class Weeklies(db.Model):
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
     week = db.Column(db.SMALLINT)
-    is_prev_week = db.Column(db.BOOLEAN)
+    is_prev_week = db.Column(db.BOOLEAN, default=False)
     weeklies_list = db.Column(db.TEXT)
     weeklies_done = db.Column(db.TEXT)
 
-    def __init__(self, character, week, is_prev_week, weeklies_list, weeklies_done):
+    def __init__(self, character, week, weeklies_list, weeklies_done):
         self.character = character
         self.week = week
-        self.is_prev_week = is_prev_week
         self.weeklies_list = weeklies_list
         self.weeklies_done = weeklies_done
 

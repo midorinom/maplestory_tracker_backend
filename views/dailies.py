@@ -24,7 +24,7 @@ def get_dailies():
         dailies = dailies_schema.dump(Dailies.query.filter(Dailies.character == data["character"],
                                                            Dailies.date == data["date"]), many=True)
         if len(dailies) > 0:
-            response["dailies"] = dailies
+            response["dailies"] = dailies[0]
         else:
             # Look up the existing entries
             existing_dailies = dailies_schema.dump(Dailies.query.filter(Dailies.character == data["character"]),
@@ -37,12 +37,11 @@ def get_dailies():
                 # There are 2 existing entries. Check which one is the latest.
                 date1_list = existing_dailies[0]["date"].split("-")
                 date1_list = [int(i) for i in date1_list]
-                date1 = datetime.datetime(*date1_list)
+                date1 = datetime.date(*date1_list)
 
                 date2_list = existing_dailies[1]["date"].split("-")
                 date2_list = [int(i) for i in date2_list]
-                date2 = datetime.datetime(*date2_list)
-                print(date2)
+                date2 = datetime.date(*date2_list)
 
                 # If the second element is the latest entry, set index to 1
                 if date2 > date1:
@@ -71,6 +70,6 @@ def get_dailies():
         print(err)
 
         response = {
-            "message": "an error has occured when getting dailies, weeklies and ursus_tour"
+            "message": "an error has occured when getting dailies"
         }
         return jsonify(response), 400

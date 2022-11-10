@@ -70,9 +70,38 @@ def get_all_characters():
         return jsonify(response), 400
 
 
+# Update Character
+@characters_blueprint.patch("/characters/update")
+def update_character():
+    json_data = request.get_json()
+
+    try:
+        data = characters_schema.load(json_data)
+
+        Characters.query.filter(Characters.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "Character is updated",
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating the character"
+        }
+        return jsonify(response), 400
+
+
 # Delete Character
 @characters_blueprint.delete("/characters/delete")
-def delete_characters():
+def delete_character():
     json_data = request.get_json()
 
     try:

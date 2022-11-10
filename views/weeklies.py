@@ -21,12 +21,10 @@ def get_dailies():
         # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date.
         # The operation involving timedelta returns a datetime Object. strftime formats it back to a string.
         first_day_of_week = (date + datetime.timedelta(days=-date.weekday())).strftime("%Y-%m-%d")
-        print(first_day_of_week)
 
         # Change key in json_data from "date" to "first_day_of_week", then load json_data
         json_data["first_day_of_week"] = json_data.pop("date")
         json_data["first_day_of_week"] = first_day_of_week
-        print(json_data)
 
         data = weeklies_schema.load(json_data)
 

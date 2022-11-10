@@ -9,14 +9,13 @@ class Dailies(db.Model):
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
     date = db.Column(db.DATE)
-    is_prev_day = db.Column(db.BOOLEAN)
-    dailies_list = db.Column(db.VARCHAR(50))
-    dailies_done = db.Column(db.VARCHAR(50))
+    is_prev_day = db.Column(db.BOOLEAN, default=False)
+    dailies_list = db.Column(db.TEXT)
+    dailies_done = db.Column(db.TEXT)
 
-    def __init__(self, character, date, is_prev_day, dailies_list, dailies_done):
+    def __init__(self, character, date, dailies_list, dailies_done):
         self.character = character
         self.date = date
-        self.is_prev_day = is_prev_day
         self.dailies_list = dailies_list
         self.dailies_done = dailies_done
 

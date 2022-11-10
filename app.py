@@ -26,9 +26,11 @@ from views.users import users_blueprint
 from views.characters import characters_blueprint
 from views.dailies import dailies_blueprint
 from views.weeklies import weeklies_blueprint
+from views.ursusTour import ursus_tour_blueprint
 
 app.register_blueprint(enums_blueprint)
 app.register_blueprint(users_blueprint)
 app.register_blueprint(characters_blueprint)
 app.register_blueprint(dailies_blueprint)
 app.register_blueprint(weeklies_blueprint)
+app.register_blueprint(ursus_tour_blueprint)

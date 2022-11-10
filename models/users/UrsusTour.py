@@ -9,14 +9,12 @@ class UrsusTour(db.Model):
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username"))
     date = db.Column(db.DATE)
-    ursus = db.Column(db.INT)
-    tour = db.Column(db.INT)
+    ursus = db.Column(db.INT, default=0)
+    tour = db.Column(db.INT, default=0)
 
-    def __init__(self, username, date, ursus, tour):
+    def __init__(self, username, date):
         self.username = username
         self.date = date
-        self.ursus = ursus
-        self.tour = tour
 
 
 class UrsusTourSchema(Schema):

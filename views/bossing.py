@@ -2,7 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.bossing.Bossing import Bossing, bossing_schema
 import datetime
-from models.NonRelational import BossesGms, BossesMsea, bosses_gms_schema, bosses_msea_schema
+from models.NonRelational import BossesGms, BossesMsea
 
 
 bossing_blueprint = Blueprint("bossing", __name__)
@@ -82,8 +82,6 @@ def get_bossing():
                 bossing_list = existing_bossing[index]["bossing_list"]
             else:
                 # Set a hardest_boss value based on the character's level
-                hardest_boss = 0
-
                 if level < 235:
                     # Up to Chaos Vellum
                     hardest_boss = 2

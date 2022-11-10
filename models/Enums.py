@@ -2,7 +2,7 @@ from app import db
 from flask import Blueprint
 
 
-enums_blueprint = Blueprint("enums", __name__)
+models_enums_blueprint = Blueprint("models_enums", __name__)
 
 
 # Roles

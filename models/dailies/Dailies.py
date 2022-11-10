@@ -9,7 +9,7 @@ class Dailies(db.Model):
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
     date = db.Column(db.DATE)
-    is_prev_day = db.Column(db.BOOLEAN, default=False)
+    is_current_day = db.Column(db.BOOLEAN, default=True)
     dailies_list = db.Column(db.TEXT)
     dailies_done = db.Column(db.TEXT, default="")
 
@@ -23,7 +23,7 @@ class DailiesSchema(Schema):
     uuid = fields.UUID()
     character = fields.UUID()
     date = fields.Date()
-    is_prev_day = fields.Bool()
+    is_current_day = fields.Bool()
     dailies_list = fields.Str()
     dailies_done = fields.Str()
 

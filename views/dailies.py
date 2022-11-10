@@ -52,9 +52,9 @@ def get_dailies():
                 Dailies.query.filter(Dailies.uuid == existing_dailies[0 if index == 1 else 1]["uuid"]).delete()
                 db.session.commit()
 
-            # If there are existing entries, set the latest existing entry to is_prev_day=True. Also set dailies_list
+            # If there are existing entries, set the latest entry to is_current_day=False. Also, set dailies_list
             if len(existing_dailies) > 0:
-                Dailies.query.filter(Dailies.uuid == existing_dailies[index]["uuid"]).update({"is_prev_day": True})
+                Dailies.query.filter(Dailies.uuid == existing_dailies[index]["uuid"]).update({"is_current_day": False})
                 db.session.commit()
 
                 dailies_list = existing_dailies[index]["dailies_list"]

@@ -68,9 +68,10 @@ def get_dailies():
                 Weeklies.query.filter(Weeklies.uuid == existing_weeklies[0 if index == 1 else 1]["uuid"]).delete()
                 db.session.commit()
 
-            # If there are existing entries, set the latest existing entry to is_prev_week=True. Also set weeklies_list
+            # If there are existing entries, set the latest entry to is_current_week=False. Also, set weeklies_list
             if len(existing_weeklies) > 0:
-                Weeklies.query.filter(Weeklies.uuid == existing_weeklies[index]["uuid"]).update({"is_prev_week": True})
+                Weeklies.query.filter(
+                    Weeklies.uuid == existing_weeklies[index]["uuid"]).update({"is_current_week": False})
                 db.session.commit()
 
                 weeklies_list = existing_weeklies[index]["weeklies_list"]

@@ -2,6 +2,8 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.dailies.Dailies import Dailies, dailies_schema
 import datetime
+from models.NonRelational import DailiesDefault, dailies_default_schema
+import json
 
 
 dailies_blueprint = Blueprint("dailies", __name__)
@@ -58,7 +60,10 @@ def get_dailies():
 
                 dailies_list = existing_dailies[index]["dailies_list"]
             else:
-                dailies_list = "test1@test2@test3"
+                # Query from the dailies_default table and construct a dailies_list from the data
+                dailies_default = DailiesDefault.query.all()
+                dailies_default = [element.dailies_list for element in dailies_default]
+                dailies_list = "@".join(dailies_default)
 
             # Make an entry for today's date
             new_dailies = Dailies(character=data["character"], date=data["date"],

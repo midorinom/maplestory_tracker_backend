@@ -2,6 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.dailies.Weeklies import Weeklies, weeklies_schema
 import datetime
+from models.NonRelational import WeekliesDefault
 
 
 weeklies_blueprint = Blueprint("weeklies", __name__)
@@ -60,7 +61,10 @@ def get_dailies():
 
                 weeklies_list = existing_weeklies[index]["weeklies_list"]
             else:
-                weeklies_list = "test1@test2@test3"
+                # Query from the weeklies_default table and construct a dailies_list from the data
+                weeklies_default = WeekliesDefault.query.all()
+                weeklies_default = [element.weeklies_list for element in weeklies_default]
+                weeklies_list = "@".join(weeklies_default)
 
             # Make an entry for this week
             new_weeklies = Weeklies(character=data["character"], week=week,

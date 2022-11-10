@@ -2,7 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.bossing.Bossing import Bossing, bossing_schema
 import datetime
-from models.NonRelational import BossesGms, BossesMsea
+from models.NonRelational import BossesGms, BossesMsea, bosses_gms_schema, bosses_msea_schema
 
 
 bossing_blueprint = Blueprint("bossing", __name__)
@@ -22,12 +22,10 @@ def get_bossing():
         # Then add 3 to get Thursday, which is the day when the bossing week resets.
         # The operation involving timedelta returns a datetime Object. strftime formats it back to a string.
         first_day_of_week = (date + datetime.timedelta(days=-date.weekday()+3)).strftime("%Y-%m-%d")
-        print(first_day_of_week)
 
-        # Change key in json_data from "date" to "first_day_of_week"
-        json_data["first_day_of_week"] = json_data.pop("date")
+        # Remove date from json_data, add first_day_of_week
+        json_data.pop("date")
         json_data["first_day_of_week"] = first_day_of_week
-        print(json_data)
 
         # Store level and role in a variable, then remove them from json_data, then load json_data
         level = json_data["level"]
@@ -131,8 +129,24 @@ def update_bossing():
     json_data = request.get_json()
 
     try:
+        # Check role, then query from the bosses table and construct a bossing_list from the data.
+        if json_data["role"] == "MSEA":
+            bosses = BossesMsea.query.filter(BossesMsea.id <= json_data["hardest_boss"]).with_entities(BossesMsea.name)
+            bosses = [element.name for element in bosses]
+            bossing_list = "@".join(bosses)
+        else:
+            bosses = BossesGms.query.filter(BossesGms.id <= json_data["hardest_boss"]).with_entities(BossesGms.name)
+            bosses = [element.name for element in bosses]
+            bossing_list = "@".join(bosses)
+
+        # Remove role and hardest_boss from json_data, add bossing_list, then load json_data
+        json_data.pop("role")
+        json_data.pop("hardest_boss")
+        json_data["bossing_list"] = bossing_list
+
         data = bossing_schema.load(json_data)
 
+        # Perform the update
         Bossing.query.filter(Bossing.uuid == data["uuid"]).update(
             {
                 **data
@@ -150,5 +164,35 @@ def update_bossing():
 
         response = {
             "message": "an error has occured when updating bossing"
+        }
+        return jsonify(response), 400
+
+
+# Get Boss Names and Crystal Prices
+@bossing_blueprint.post("/bosses/name-crystal/get")
+def get_bosses_name_crystal():
+    json_data = request.get_json()
+
+    try:
+        if json_data["role"] == "MSEA":
+            bosses_data = BossesMsea.query.all()
+        else:
+            bosses_data = BossesGms.query.all()
+
+        names = [element.name for element in bosses_data]
+        crystals = [element.crystal for element in bosses_data]
+
+        response = {
+            "message": "Got boss names and crystal prices",
+            "names": names,
+            "crystals": crystals
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting boss names and crystal prices"
         }
         return jsonify(response), 400

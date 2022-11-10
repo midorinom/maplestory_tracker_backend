@@ -42,3 +42,32 @@ def get_ursus_tour():
             "message": "an error has occured when getting ursus_tour"
         }
         return jsonify(response), 400
+
+
+# Update ursus_tour
+@ursus_tour_blueprint.patch("/ursus-tour/update")
+def update_ursus_tour():
+    json_data = request.get_json()
+
+    try:
+        data = ursus_tour_schema.load(json_data)
+
+        UrsusTour.query.filter(UrsusTour.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "ursus_tour is updated",
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating ursus_tour"
+        }
+        return jsonify(response), 400

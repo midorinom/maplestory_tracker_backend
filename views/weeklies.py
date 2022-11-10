@@ -75,3 +75,32 @@ def get_dailies():
             "message": "an error has occured when getting weeklies"
         }
         return jsonify(response), 400
+
+
+# Update Weeklies
+@weeklies_blueprint.patch("/weeklies/update")
+def update_weeklies():
+    json_data = request.get_json()
+
+    try:
+        data = weeklies_schema.load(json_data)
+
+        Weeklies.query.filter(Weeklies.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "Weeklies is updated",
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating weeklies"
+        }
+        return jsonify(response), 400

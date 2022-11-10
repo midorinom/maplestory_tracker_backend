@@ -73,3 +73,32 @@ def get_dailies():
             "message": "an error has occured when getting dailies"
         }
         return jsonify(response), 400
+
+
+# Update Dailies
+@dailies_blueprint.patch("/dailies/update")
+def update_dailies():
+    json_data = request.get_json()
+
+    try:
+        data = dailies_schema.load(json_data)
+
+        Dailies.query.filter(Dailies.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "Dailies is updated",
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating dailies"
+        }
+        return jsonify(response), 400

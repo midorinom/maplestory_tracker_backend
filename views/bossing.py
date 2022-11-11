@@ -2,7 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.bossing.Bossing import Bossing, bossing_schema
 import datetime
-from models.NonRelational import Bosses
+from models.NonRelational import Bosses, bosses_schema
 
 
 bossing_blueprint = Blueprint("bossing", __name__)
@@ -155,20 +155,17 @@ def update_bossing():
 
 
 # Get Boss Names and Crystal Prices
-@bossing_blueprint.post("/bosses/name-crystal/get")
+@bossing_blueprint.post("/bosses/get")
 def get_bosses_name_crystal():
     json_data = request.get_json()
 
     try:
-        bosses_data = Bosses.query.filter(Bosses.region == json_data["role"])
-
-        names = [element.name for element in bosses_data]
-        crystals = [element.crystal for element in bosses_data]
+        bosses = bosses_schema.dump(Bosses.query.filter(
+            Bosses.region == json_data["role"]).with_entities(Bosses.name, Bosses.crystal), many=True)
 
         response = {
-            "message": "Got boss names and crystal prices",
-            "names": names,
-            "crystals": crystals
+            "message": "Got bosses",
+            "bosses": bosses
         }
         return jsonify(response), 200
 
@@ -176,6 +173,6 @@ def get_bosses_name_crystal():
         print(err)
 
         response = {
-            "message": "an error has occured when getting boss names and crystal prices"
+            "message": "an error has occured when getting bosses"
         }
         return jsonify(response), 400

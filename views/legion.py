@@ -12,10 +12,11 @@ def get_legion():
     json_data = request.get_json()
 
     try:
-        data = legion_schema.dump(json_data)
+        data = legion_schema.load(json_data)
 
-        legion = Legion.query.order_by(Legion.level.desc()).filter(Legion.username == data["username"])
-        legion = [{"class_name": element.class_name, "level": element.level} for element in legion]
+        legion = legion_schema.dump(Legion.query.order_by(
+            Legion.level.desc()).filter(
+            Legion.username == data["username"]).with_entities(Legion.class_name, Legion.level), many=True)
 
         response = {
             "message": "Got legion",

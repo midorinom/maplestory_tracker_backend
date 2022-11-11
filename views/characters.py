@@ -52,12 +52,12 @@ def get_all_characters():
     try:
         data = characters_schema.load(json_data)
 
-        all_characters = characters_schema.dump(Characters.query.order_by(Characters.level.desc()).filter(
-            Characters.username == data["username"]))
+        characters = characters_schema.dump(Characters.query.order_by(Characters.level.desc()).filter(
+            Characters.username == data["username"]), many=True)
 
         response = {
-            "message": "Got all characters",
-            "all_characters": all_characters
+            "message": "Got characters",
+            "characters": characters
         }
         return jsonify(response), 200
 
@@ -65,7 +65,7 @@ def get_all_characters():
         print(err)
 
         response = {
-            "message": "an error has occured when getting all characters"
+            "message": "an error has occured when getting characters"
         }
         return jsonify(response), 400
 

@@ -97,8 +97,7 @@ def get_world_currency():
 
         # Query for the user's world currency data
         world_currency = user_world_currency_schema.dump(UserWorldCurrency.query.filter(
-            UserWorldCurrency.username == json_data["username"]).with_entities(
-            UserWorldCurrency.uuid, UserWorldCurrency.currency, UserWorldCurrency.amount), many=True)
+            UserWorldCurrency.username == json_data["username"]), many=True)
 
         if len(world_currency) == 0:
             # This is either a new account, or the event has changed and the previous data has just been deleted
@@ -116,8 +115,7 @@ def get_world_currency():
 
             # Query for the newly created data to add to the response
             world_currency = user_world_currency_schema.dump(UserWorldCurrency.query.filter(
-                UserWorldCurrency.username == json_data["username"]).with_entities(
-                UserWorldCurrency.uuid, UserWorldCurrency.currency, UserWorldCurrency.amount), many=True)
+                UserWorldCurrency.username == json_data["username"]), many=True)
 
         response = {
             "message": "Got world currency",
@@ -163,10 +161,80 @@ def update_world_currency():
         return jsonify(response), 400
 
 
+# Get World Shop Items
+@events_blueprint.post("/events/world/shops/get")
+def get_world_shops():
+    json_data = request.get_json()
+
+    try:
+        if json_data["event_has_changed"]:
+            # Event has changed since the last time the user logged in. Delete all data on the previous event
+            UserWorldShops.query.filter(UserWorldShops.username == json_data["username"]).delete()
+            db.session.commit()
+
+        # Query for the user's world shops data
+        world_shops = user_world_shops_schema.dump(UserWorldShops.query.filter(
+            UserWorldShops.username == json_data["username"]), many=True)
+
+        if len(world_shops) == 0:
+            # This is either a new account, or the event has changed and the previous data has just been deleted
+            # Query for world shops
+            world_shops = events_world_shops_schema.dump(EventsWorldShops.query.all(), many=True)
+
+            # List comprehension to generate a list of object instances to be added to the database
+            new_world_shops = [UserWorldShops(
+                username=json_data["username"], currency=element["currency"], item=element["item"],
+                cost=element["cost"], quantity=element["quantity"]) for element in world_shops]
+
+            db.session.add_all(new_world_shops)
+            db.session.commit()
+
+            # Query for the newly created data to add to the response
+            world_shops = user_world_shops_schema.dump(UserWorldShops.query.filter(
+                UserWorldShops.username == json_data["username"]), many=True)
+
+        response = {
+            "message": "Got world shop items",
+            "world_shops": world_shops
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting world shop items"
+        }
+        return jsonify(response), 400
 
 
+# Update World Shop Item
+@events_blueprint.patch("/events/world/shops/update")
+def update_world_shop():
+    json_data = request.get_json()
 
+    try:
+        data = user_world_shops_schema.load(json_data)
 
+        UserWorldShops.query.filter(UserWorldShops.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "World shop item is updated"
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating world shop item"
+        }
+        return jsonify(response), 400
 
 
 # Get Character Currency
@@ -182,8 +250,7 @@ def get_character_currency():
 
         # Query for the user's character currency data
         character_currency = user_character_currency_schema.dump(UserCharacterCurrency.query.filter(
-            UserCharacterCurrency.username == json_data["username"]).with_entities(
-            UserCharacterCurrency.uuid, UserCharacterCurrency.currency, UserCharacterCurrency.amount), many=True)
+            UserCharacterCurrency.username == json_data["username"]), many=True)
 
         if len(character_currency) == 0:
             # This is either a new account, or the event has changed and the previous data has just been deleted
@@ -201,8 +268,7 @@ def get_character_currency():
 
             # Query for the newly created data to add to the response
             character_currency = user_character_currency_schema.dump(UserCharacterCurrency.query.filter(
-                UserCharacterCurrency.username == json_data["username"]).with_entities(
-                UserCharacterCurrency.uuid, UserCharacterCurrency.currency, UserCharacterCurrency.amount), many=True)
+                UserCharacterCurrency.username == json_data["username"]), many=True)
 
         response = {
             "message": "Got character currency",
@@ -244,5 +310,81 @@ def update_character_currency():
 
         response = {
             "message": "an error has occured when updating character currency"
+        }
+        return jsonify(response), 400
+
+
+# Get Character Shop Items
+@events_blueprint.post("/events/character/shops/get")
+def get_character_shops():
+    json_data = request.get_json()
+
+    try:
+        if json_data["event_has_changed"]:
+            # Event has changed since the last time the user logged in. Delete all data on the previous event
+            UserCharacterShops.query.filter(UserCharacterShops.character == json_data["character"]).delete()
+            db.session.commit()
+
+        # Query for the user's character shops data
+        character_shops = user_character_shops_schema.dump(UserCharacterShops.query.filter(
+            UserCharacterShops.character == json_data["character"]), many=True)
+
+        if len(character_shops) == 0:
+            # This is either a new account, or the event has changed and the previous data has just been deleted
+            # Query for character shops
+            character_shops = events_character_shops_schema.dump(EventsCharacterShops.query.all(), many=True)
+
+            # List comprehension to generate a list of object instances to be added to the database
+            new_character_shops = [UserCharacterShops(
+                character=json_data["character"], currency=element["currency"], item=element["item"],
+                cost=element["cost"], quantity=element["quantity"]) for element in character_shops]
+
+            db.session.add_all(new_character_shops)
+            db.session.commit()
+
+            # Query for the newly created data to add to the response
+            character_shops = user_character_shops_schema.dump(UserCharacterShops.query.filter(
+                UserCharacterShops.character == json_data["character"]), many=True)
+
+        response = {
+            "message": "Got character shop items",
+            "character_shops": character_shops
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting character shop items"
+        }
+        return jsonify(response), 400
+
+
+# Update Character Shop Item
+@events_blueprint.patch("/events/character/shops/update")
+def update_character_shop():
+    json_data = request.get_json()
+
+    try:
+        data = user_character_shops_schema.load(json_data)
+
+        UserCharacterShops.query.filter(UserCharacterShops.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "Character shop item is updated"
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating character shop item"
         }
         return jsonify(response), 400

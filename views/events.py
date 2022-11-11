@@ -108,7 +108,7 @@ def get_world_currency():
 
             # List comprehension to generate a list of object instances to be added to the database
             new_world_currency = [UserWorldCurrency(
-                username=json_data["username"], currency=element["currency"], amount=0) for element in currencies]
+                username=json_data["username"], currency=element["currency"]) for element in currencies]
 
             db.session.add_all(new_world_currency)
             db.session.commit()
@@ -261,7 +261,7 @@ def get_character_currency():
 
             # List comprehension to generate a list of object instances to be added to the database
             new_character_currency = [UserCharacterCurrency(
-                character=json_data["character"], currency=element["currency"], amount=0) for element in currencies]
+                character=json_data["character"], currency=element["currency"]) for element in currencies]
 
             db.session.add_all(new_character_currency)
             db.session.commit()

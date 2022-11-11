@@ -9,12 +9,11 @@ class UserWorldCurrency(db.Model):
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username"))
     currency = db.Column(db.VARCHAR(20))
-    amount = db.Column(db.SMALLINT)
+    amount = db.Column(db.SMALLINT, default=0)
 
-    def __init__(self, username, currency, amount):
+    def __init__(self, username, currency):
         self.username = username
         self.currency = currency
-        self.amount = amount
 
 
 class UserWorldCurrencySchema(Schema):
@@ -32,12 +31,11 @@ class UserCharacterCurrency(db.Model):
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
     currency = db.Column(db.VARCHAR(20))
-    amount = db.Column(db.SMALLINT)
+    amount = db.Column(db.SMALLINT, default=0)
 
-    def __init__(self, character, currency, amount):
+    def __init__(self, character, currency):
         self.character = character
         self.currency = currency
-        self.amount = amount
 
 
 class UserCharacterCurrencySchema(Schema):

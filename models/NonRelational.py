@@ -33,35 +33,20 @@ class WeekliesDefaultSchema(Schema):
 weeklies_defualt_schema = WeekliesDefaultSchema()
 
 
-# BossesGms
-class BossesGms(db.Model):
-    __tablename__ = "bosses_gms"
+# Bosses
+class Bosses(db.Model):
+    __tablename__ = "bosses"
     id = db.Column(db.SMALLINT, primary_key=True)
+    region = db.Column(db.VARCHAR(20), db.ForeignKey("roles_enum.roles"))
     name = db.Column(db.VARCHAR(20))
     crystal = db.Column(db.BIGINT)
 
 
-class BossesGmsSchema(Schema):
+class BossesSchema(Schema):
     id = fields.Int()
+    region = fields.Str()
     name = fields.Str()
     crystal = fields.Int()
 
 
-bosses_gms_schema = BossesGmsSchema()
-
-
-# BossesMsea
-class BossesMsea(db.Model):
-    __tablename__ = "bosses_msea"
-    id = db.Column(db.SMALLINT, primary_key=True)
-    name = db.Column(db.VARCHAR(20))
-    crystal = db.Column(db.BIGINT)
-
-
-class BossesMseaSchema(Schema):
-    id = fields.Int()
-    name = fields.Str()
-    crystal = fields.Int()
-
-
-bosses_msea_schema = BossesMseaSchema()
+bosses_schema = BossesSchema()

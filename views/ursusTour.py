@@ -22,7 +22,7 @@ def get_ursus_tour():
 
         # Check if there is an existing entry for today's date. If so, add it to the response
         ursus_tour = ursus_tour_schema.dump(UrsusTour.query.filter(UrsusTour.username == data["username"],
-                                                                   UrsusTour.date == data["date"]), many=True)
+                                                                   UrsusTour.date == data["date"]))
         if len(ursus_tour) > 0:
             response["ursus_tour"] = ursus_tour[0]
         else:

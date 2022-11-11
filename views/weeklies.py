@@ -35,15 +35,13 @@ def get_dailies():
 
         # Check if there is an existing entry for this week. If so, add it to the response
         weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"],
-                                                              Weeklies.first_day_of_week == first_day_of_week),
-                                        many=True)
+                                                              Weeklies.first_day_of_week == first_day_of_week))
 
         if len(weeklies) > 0:
             response["weeklies"] = weeklies[0]
         else:
             # Look up the existing entries
-            existing_weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"]),
-                                                     many=True)
+            existing_weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"]))
 
             # Index will be 0 if there is only 1 existing entry
             index = 0

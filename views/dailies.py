@@ -23,13 +23,12 @@ def get_dailies():
 
         # Check if there is an existing entry for today's date. If so, add it to the response
         dailies = dailies_schema.dump(Dailies.query.filter(Dailies.character == data["character"],
-                                                           Dailies.date == data["date"]), many=True)
+                                                           Dailies.date == data["date"]))
         if len(dailies) > 0:
             response["dailies"] = dailies[0]
         else:
             # Look up the existing entries
-            existing_dailies = dailies_schema.dump(Dailies.query.filter(Dailies.character == data["character"]),
-                                                   many=True)
+            existing_dailies = dailies_schema.dump(Dailies.query.filter(Dailies.character == data["character"]))
 
             # Index will be 0 if there is only 1 existing entry
             index = 0

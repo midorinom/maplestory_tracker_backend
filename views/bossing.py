@@ -2,7 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.bossing.Bossing import Bossing, bossing_schema
 import datetime
-from models.NonRelational import BossesGms, BossesMsea
+from models.NonRelational import Bosses
 
 
 bossing_blueprint = Blueprint("bossing", __name__)
@@ -43,14 +43,13 @@ def get_bossing():
 
         # Check if there is an existing entry for this week. If so, add it to the response
         bossing = bossing_schema.dump(Bossing.query.filter(Bossing.character == data["character"],
-                                                           Bossing.first_day_of_week == first_day_of_week), many=True)
+                                                           Bossing.first_day_of_week == first_day_of_week))
 
         if len(bossing) > 0:
             response["bossing"] = bossing[0]
         else:
             # Look up the existing entries
-            existing_bossing = bossing_schema.dump(Bossing.query.filter(Bossing.character == data["character"]),
-                                                   many=True)
+            existing_bossing = bossing_schema.dump(Bossing.query.filter(Bossing.character == data["character"]))
 
             # Index will be 0 if there is only 1 existing entry
             index = 0
@@ -89,18 +88,11 @@ def get_bossing():
                     # Up to Normal Damien
                     hardest_boss = 3
 
-                # Check role, then query from the bosses table and construct a bossing_list from the data.
-                if role == "MSEA":
-                    bosses = BossesMsea.query.filter(BossesMsea.id <= hardest_boss).with_entities(BossesMsea.name)
+                # Using role to filter the region, query from the bosses table and construct a bossing_list
+                    bosses = Bosses.query.filter(
+                        Bosses.region == role, Bosses.id <= hardest_boss).with_entities(Bosses.name)
                     bosses = [element.name for element in bosses]
                     bossing_list = "@".join(bosses)
-                else:
-                    bosses = BossesGms.query.filter(BossesGms.id <= hardest_boss).with_entities(BossesGms.name)
-                    bosses = [element.name for element in bosses]
-                    bossing_list = "@".join(bosses)
-
-                print(hardest_boss)
-                print("bossing list", bossing_list)
 
             # Make an entry for this week
             new_bossing = Bossing(character=data["character"], first_day_of_week=first_day_of_week,
@@ -127,15 +119,11 @@ def update_bossing():
     json_data = request.get_json()
 
     try:
-        # Check role, then query from the bosses table and construct a bossing_list from the data.
-        if json_data["role"] == "MSEA":
-            bosses = BossesMsea.query.filter(BossesMsea.id <= json_data["hardest_boss"]).with_entities(BossesMsea.name)
-            bosses = [element.name for element in bosses]
-            bossing_list = "@".join(bosses)
-        else:
-            bosses = BossesGms.query.filter(BossesGms.id <= json_data["hardest_boss"]).with_entities(BossesGms.name)
-            bosses = [element.name for element in bosses]
-            bossing_list = "@".join(bosses)
+        # Using role to filter the region, query from the bosses table and construct a bossing_list
+        bosses = Bosses.query.filter(
+            Bosses.region == json_data["role"], Bosses.id <= json_data["hardest_boss"]).with_entities(Bosses.name)
+        bosses = [element.name for element in bosses]
+        bossing_list = "@".join(bosses)
 
         # Remove role and hardest_boss from json_data, add bossing_list, then load json_data
         json_data.pop("role")
@@ -172,10 +160,7 @@ def get_bosses_name_crystal():
     json_data = request.get_json()
 
     try:
-        if json_data["role"] == "MSEA":
-            bosses_data = BossesMsea.query.all()
-        else:
-            bosses_data = BossesGms.query.all()
+        bosses_data = Bosses.query.filter(Bosses.region == json_data["role"])
 
         names = [element.name for element in bosses_data]
         crystals = [element.crystal for element in bosses_data]

@@ -17,7 +17,7 @@ def create_character():
 
         # Check if the same character has already been created by this user
         duplicate_character = characters_schema.dump(Characters.query.join(Users).filter(
-                               Characters.username == data["username"], Characters.ign == data["ign"]), many=True)
+                               Characters.username == data["username"], Characters.ign == data["ign"]))
         if duplicate_character:
             response = {
                 "message": "This character has already been created"
@@ -53,7 +53,7 @@ def get_all_characters():
         data = characters_schema.load(json_data)
 
         all_characters = characters_schema.dump(Characters.query.order_by(Characters.level.desc()).filter(
-            Characters.username == data["username"]), many=True)
+            Characters.username == data["username"]))
 
         response = {
             "message": "Got all characters",

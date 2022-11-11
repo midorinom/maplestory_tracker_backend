@@ -3,6 +3,8 @@ from flask import request, jsonify, Blueprint
 from models.users.Users import Users, users_schema
 from models.events.EventsMain import EventsMain, events_main_schema
 from models.events.EventsSub import EventsSub, events_sub_schema
+from models.events.EventsWorldShops import EventsWorldShops, events_world_shops_schema
+from models.events.EventsCharacterShops import EventsCharacterShops, events_character_shops_schema
 from models.events.UserShops import UserWorldShops, UserCharacterShops,\
     user_world_shops_schema, user_character_shops_schema
 from models.events.UserCurrency import UserWorldCurrency, UserCharacterCurrency,\
@@ -88,8 +90,32 @@ def get_world_currency():
     json_data = request.get_json()
 
     try:
+        if json_data["event_has_changed"]:
+            # Event has changed since the last time the user logged in. Delete all data on the previous event
+            UserWorldCurrency.query.filter(UserWorldCurrency.username == json_data["username"]).delete()
+            db.session.commit()
+
+        # Query for the user's world currency data
         world_currency = user_world_currency_schema.dump(UserWorldCurrency.query.filter(
-            UserWorldCurrency.username == json_data["username"]), many=True)
+            UserWorldCurrency.username == json_data["username"]).with_entities(
+            UserWorldCurrency.currency, UserWorldCurrency.amount), many=True)
+
+        if len(world_currency) == 0:
+            # This is either a new account, or the event has changed and the previous data has just been deleted
+            # Query for world shops and extract distinct values of "currency"
+            currencies = events_world_shops_schema.dump(EventsWorldShops.query.filter(
+                EventsWorldShops.region == json_data["role"]).with_entities(EventsWorldShops.currency).distinct(),
+                                                        many=True)
+
+            # List comprehension to generate a list of object instances to be added to the database
+            new_world_currency = [UserWorldCurrency(
+                username=json_data["username"], currency=element["currency"], amount=0) for element in currencies]
+
+            db.session.add_all(new_world_currency)
+            db.session.commit()
+
+            # Create a version of world_currency that can be added to the response
+            world_currency = [{"currency": element["currency"], "amount": 0} for element in currencies]
 
         response = {
             "message": "Got world currency",
@@ -107,7 +133,7 @@ def get_world_currency():
 
 
 # Update World Currency
-@events_blueprint.post("/events/world/currency/update")
+@events_blueprint.patch("/events/world/currency/update")
 def update_world_currency():
     json_data = request.get_json()
 

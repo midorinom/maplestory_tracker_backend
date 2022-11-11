@@ -36,7 +36,7 @@ from views.ursusTour import ursus_tour_blueprint
 from views.bossing import bossing_blueprint
 from views.legion import legion_blueprint
 from views.eventsAdmin import events_admin_blueprint
-from views.eventsUser import events_user_blueprint
+from views.events import events_blueprint
 
 app.register_blueprint(views_enums_blueprint)
 app.register_blueprint(users_blueprint)
@@ -47,4 +47,4 @@ app.register_blueprint(ursus_tour_blueprint)
 app.register_blueprint(bossing_blueprint)
 app.register_blueprint(legion_blueprint)
 app.register_blueprint(events_admin_blueprint)
-app.register_blueprint(events_user_blueprint)
+app.register_blueprint(events_blueprint)

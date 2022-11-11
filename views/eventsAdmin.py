@@ -15,7 +15,7 @@ def get_event_information():
     json_data = request.get_json()
 
     try:
-        # Use region as a filter,
+        # Use region as a filter
         main_event = events_main_schema.dump(EventsMain.query.filter(
             EventsMain.region == json_data["region"]), many=True)
         sub_events = events_sub_schema.dump(EventsSub.query.filter(EventsSub.region == json_data["region"]), many=True)

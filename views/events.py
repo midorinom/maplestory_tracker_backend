@@ -98,7 +98,7 @@ def get_world_currency():
         # Query for the user's world currency data
         world_currency = user_world_currency_schema.dump(UserWorldCurrency.query.filter(
             UserWorldCurrency.username == json_data["username"]).with_entities(
-            UserWorldCurrency.currency, UserWorldCurrency.amount), many=True)
+            UserWorldCurrency.uuid, UserWorldCurrency.currency, UserWorldCurrency.amount), many=True)
 
         if len(world_currency) == 0:
             # This is either a new account, or the event has changed and the previous data has just been deleted
@@ -114,8 +114,10 @@ def get_world_currency():
             db.session.add_all(new_world_currency)
             db.session.commit()
 
-            # Create a version of world_currency that can be added to the response
-            world_currency = [{"currency": element["currency"], "amount": 0} for element in currencies]
+            # Query for the newly created data to add to the response
+            world_currency = user_world_currency_schema.dump(UserWorldCurrency.query.filter(
+                UserWorldCurrency.username == json_data["username"]).with_entities(
+                UserWorldCurrency.uuid, UserWorldCurrency.currency, UserWorldCurrency.amount), many=True)
 
         response = {
             "message": "Got world currency",
@@ -138,12 +140,17 @@ def update_world_currency():
     json_data = request.get_json()
 
     try:
-        world_currency = user_world_currency_schema.dump(UserWorldCurrency.query.filter(
-            UserWorldCurrency.username == json_data["username"]), many=True)
+        data = user_world_currency_schema.load(json_data)
+
+        UserWorldCurrency.query.filter(UserWorldCurrency.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
 
         response = {
-            "message": "Got world currency",
-            "world_currency": world_currency
+            "message": "World currency is updated"
         }
         return jsonify(response), 200
 
@@ -151,6 +158,91 @@ def update_world_currency():
         print(err)
 
         response = {
-            "message": "an error has occured when getting world currency"
+            "message": "an error has occured when updating world currency"
+        }
+        return jsonify(response), 400
+
+
+
+
+
+
+
+
+# Get Character Currency
+@events_blueprint.post("/events/character/currency/get")
+def get_character_currency():
+    json_data = request.get_json()
+
+    try:
+        if json_data["event_has_changed"]:
+            # Event has changed since the last time the user logged in. Delete all data on the previous event
+            UserCharacterCurrency.query.filter(UserCharacterCurrency.character == json_data["character"]).delete()
+            db.session.commit()
+
+        # Query for the user's character currency data
+        character_currency = user_character_currency_schema.dump(UserCharacterCurrency.query.filter(
+            UserCharacterCurrency.username == json_data["username"]).with_entities(
+            UserCharacterCurrency.uuid, UserCharacterCurrency.currency, UserCharacterCurrency.amount), many=True)
+
+        if len(character_currency) == 0:
+            # This is either a new account, or the event has changed and the previous data has just been deleted
+            # Query for character shops and extract distinct values of "currency"
+            currencies = events_character_shops_schema.dump(EventsCharacterShops.query.filter(
+                EventsCharacterShops.region == json_data["role"]).with_entities(
+                EventsCharacterShops.currency).distinct(), many=True)
+
+            # List comprehension to generate a list of object instances to be added to the database
+            new_character_currency = [UserCharacterCurrency(
+                character=json_data["character"], currency=element["currency"], amount=0) for element in currencies]
+
+            db.session.add_all(new_character_currency)
+            db.session.commit()
+
+            # Query for the newly created data to add to the response
+            character_currency = user_character_currency_schema.dump(UserCharacterCurrency.query.filter(
+                UserCharacterCurrency.username == json_data["username"]).with_entities(
+                UserCharacterCurrency.uuid, UserCharacterCurrency.currency, UserCharacterCurrency.amount), many=True)
+
+        response = {
+            "message": "Got character currency",
+            "character_currency": character_currency
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting character currency"
+        }
+        return jsonify(response), 400
+
+
+# Update Character Currency
+@events_blueprint.patch("/events/character/currency/update")
+def update_character_currency():
+    json_data = request.get_json()
+
+    try:
+        data = user_character_currency_schema.load(json_data)
+
+        UserCharacterCurrency.query.filter(UserCharacterCurrency.uuid == data["uuid"]).update(
+            {
+                **data
+            }
+        )
+        db.session.commit()
+
+        response = {
+            "message": "Character currency is updated"
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when updating character currency"
         }
         return jsonify(response), 400

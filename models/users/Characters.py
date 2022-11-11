@@ -11,6 +11,7 @@ class Characters(db.Model):
     class_name = db.Column(db.VARCHAR(20), db.ForeignKey("classes_enum.classes"))
     ign = db.Column(db.VARCHAR(12))
     level = db.Column(db.SMALLINT)
+    tracking = db.Column(db.VARCHAR(20), db.ForeignKey("tracking_enum.tracking"))
 
     def __init__(self, username, class_name, ign, level):
         self.username = username
@@ -25,6 +26,7 @@ class CharactersSchema(Schema):
     class_name = fields.Str()
     ign = fields.Str()
     level = fields.Int()
+    tracking = fields.Str()
 
 
 characters_schema = CharactersSchema()

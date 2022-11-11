@@ -11,11 +11,9 @@ class DailiesDefault(db.Model):
     __tablename__ = "dailies_default"
     dailies_list = db.Column(db.VARCHAR(50), primary_key=True)
 
-    def __init__(self, dailies_list):
-        self.dailies_list = dailies_list
-
 
 class DailiesDefaultSchema(Schema):
+    dailies_list = fields.Str()
     dailies_list = fields.Str()
 
 
@@ -26,9 +24,6 @@ dailies_default_schema = DailiesDefaultSchema()
 class WeekliesDefault(db.Model):
     __tablename__ = "weeklies_default"
     weeklies_list = db.Column(db.VARCHAR(50), primary_key=True)
-
-    def __init__(self, weeklies_list):
-        self.weeklies_list = weeklies_list
 
 
 class WeekliesDefaultSchema(Schema):
@@ -44,10 +39,6 @@ class BossesGms(db.Model):
     id = db.Column(db.SMALLINT, primary_key=True)
     name = db.Column(db.VARCHAR(20))
     crystal = db.Column(db.BIGINT)
-
-    def __init__(self, name, crystal):
-        self.name = name
-        self.crystal = crystal
 
 
 class BossesGmsSchema(Schema):
@@ -65,10 +56,6 @@ class BossesMsea(db.Model):
     id = db.Column(db.SMALLINT, primary_key=True)
     name = db.Column(db.VARCHAR(20))
     crystal = db.Column(db.BIGINT)
-
-    def __init__(self, name, crystal):
-        self.name = name
-        self.crystal = crystal
 
 
 class BossesMseaSchema(Schema):

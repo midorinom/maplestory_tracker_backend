@@ -12,25 +12,10 @@ class DailiesDefault(db.Model):
     dailies_list = db.Column(db.VARCHAR(50), primary_key=True)
 
 
-class DailiesDefaultSchema(Schema):
-    dailies_list = fields.Str()
-    dailies_list = fields.Str()
-
-
-dailies_default_schema = DailiesDefaultSchema()
-
-
 # Weeklies Default
 class WeekliesDefault(db.Model):
     __tablename__ = "weeklies_default"
     weeklies_list = db.Column(db.VARCHAR(50), primary_key=True)
-
-
-class WeekliesDefaultSchema(Schema):
-    weeklies_list = fields.Str()
-
-
-weeklies_defualt_schema = WeekliesDefaultSchema()
 
 
 # Bosses

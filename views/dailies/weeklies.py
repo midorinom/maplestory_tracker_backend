@@ -10,7 +10,7 @@ weeklies_blueprint = Blueprint("weeklies", __name__)
 
 # Get Weeklies
 @weeklies_blueprint.post("/weeklies/get")
-def get_dailies():
+def get_weeklies():
     json_data = request.get_json()
 
     try:
@@ -34,14 +34,15 @@ def get_dailies():
         }
 
         # Check if there is an existing entry for this week. If so, add it to the response
-        weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"],
-                                                              Weeklies.first_day_of_week == first_day_of_week))
+        weeklies = weeklies_schema.dump(Weeklies.query.filter(
+            Weeklies.character == data["character"], Weeklies.first_day_of_week == first_day_of_week), many=True)
 
         if len(weeklies) > 0:
             response["weeklies"] = weeklies[0]
         else:
             # Look up the existing entries
-            existing_weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"]))
+            existing_weeklies = weeklies_schema.dump(Weeklies.query.filter(
+                Weeklies.character == data["character"]), many=True)
 
             # Index will be 0 if there is only 1 existing entry
             index = 0
@@ -82,7 +83,12 @@ def get_dailies():
                                     weeklies_list=weeklies_list)
             db.session.add(new_weeklies)
             db.session.commit()
-            response["weeklies"] = weeklies_schema.dump(new_weeklies)
+
+            # Query for the newly added entry and add it to the response
+            response["weeklies"] = weeklies_schema.dump(
+                Weeklies.query.filter(
+                    Weeklies.character == data["character"],
+                    Weeklies.first_day_of_week == first_day_of_week), many=True)[0]
 
         # Return response
         return jsonify(response), 200

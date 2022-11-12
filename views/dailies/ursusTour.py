@@ -1,8 +1,6 @@
 from app import db
 from flask import request, jsonify, Blueprint
-from models.users.UrsusTour import UrsusTour, ursus_tour_schema
-import datetime
-
+from models.dailies.UrsusTour import UrsusTour, ursus_tour_schema
 
 ursus_tour_blueprint = Blueprint("ursus_tour", __name__)
 
@@ -22,7 +20,7 @@ def get_ursus_tour():
 
         # Check if there is an existing entry for today's date. If so, add it to the response
         ursus_tour = ursus_tour_schema.dump(UrsusTour.query.filter(UrsusTour.username == data["username"],
-                                                                   UrsusTour.date == data["date"]))
+                                                                   UrsusTour.date == data["date"]), many=True)
         if len(ursus_tour) > 0:
             response["ursus_tour"] = ursus_tour[0]
         else:
@@ -30,7 +28,11 @@ def get_ursus_tour():
             new_ursus_tour = UrsusTour(username=data["username"], date=data["date"])
             db.session.add(new_ursus_tour)
             db.session.commit()
-            response["ursus_tour"] = ursus_tour_schema.dump(new_ursus_tour)
+
+            # Query for the newly added entry and add it to the response
+            response["ursus_tour"] = ursus_tour_schema.dump(
+                UrsusTour.query.filter(
+                    UrsusTour.username == data["username"], UrsusTour.date == data["date"]), many=True)[0]
 
         # Return response
         return jsonify(response), 200

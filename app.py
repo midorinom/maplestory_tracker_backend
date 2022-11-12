@@ -37,6 +37,7 @@ from views.bossing.bossing import bossing_blueprint
 from views.legion.legion import legion_blueprint
 from views.events.eventsAdmin import events_admin_blueprint
 from views.events.events import events_blueprint
+from views.farming.farming import farming_blueprint
 
 app.register_blueprint(views_enums_blueprint)
 app.register_blueprint(users_blueprint)
@@ -48,3 +49,4 @@ app.register_blueprint(bossing_blueprint)
 app.register_blueprint(legion_blueprint)
 app.register_blueprint(events_admin_blueprint)
 app.register_blueprint(events_blueprint)
+app.register_blueprint(farming_blueprint)

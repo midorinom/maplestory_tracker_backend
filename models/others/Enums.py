@@ -21,3 +21,15 @@ class Classes(db.Model):
 class Tracking(db.Model):
     __tablename__ = "tracking_enum"
     tracking = db.Column(db.VARCHAR(20), primary_key=True)
+
+
+# Item Names
+class ItemNames(db.Model):
+    __tablename__ = "item_names_enum"
+    item_names = db.Column(db.VARCHAR(30), primary_key=True)
+
+
+# Slots
+class Slots(db.Model):
+    __tablename__ = "slots_enum"
+    slots = db.Column(db.VARCHAR(20), primary_key=True)

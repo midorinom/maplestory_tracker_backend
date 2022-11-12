@@ -13,6 +13,9 @@ class Characters(db.Model):
     level = db.Column(db.SMALLINT)
     tracking = db.Column(db.VARCHAR(20), db.ForeignKey("tracking_enum.tracking"))
     is_main = db.Column(db.BOOLEAN, default=False)
+    stats = db.Column(db.INT)
+    dojo = db.Column(db.SMALLINT)
+    ba = db.Column(db.SMALLINT)
 
     def __init__(self, username, class_name, ign, level):
         self.username = username
@@ -29,6 +32,9 @@ class CharactersSchema(Schema):
     level = fields.Int()
     tracking = fields.Str()
     is_main = fields.Bool()
+    stats = fields.Int()
+    dojo = fields.Int()
+    ba = fields.Int()
 
 
 characters_schema = CharactersSchema()

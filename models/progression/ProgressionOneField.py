@@ -9,13 +9,12 @@ class ProgressionOneField(db.Model):
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
     slot = db.Column(db.VARCHAR(20), db.ForeignKey("slots_enum.slots"))
-    name = db.Column(db.VARCHAR(30), db.ForeignKey("item_names_enum.item_names"))
+    name = db.Column(db.VARCHAR(30), db.ForeignKey("item_names_enum.item_names"), default=None)
     value = db.Column(db.SMALLINT, default=0)
 
-    def __init__(self, character, slot, name):
+    def __init__(self, character, slot):
         self.character = character
         self.slot = slot
-        self.name = name
 
 
 class ProgressionOneFieldSchema(Schema):

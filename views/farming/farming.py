@@ -33,7 +33,7 @@ def get_farming():
             "message": "Got farming",
         }
 
-        # Check if there is are existing entries for this week. If so, add it to the response
+        # Check if there are existing entries for this week. If so, add it to the response
         farming = farming_schema.dump(Farming.query.filter(Farming.character == data["character"],
                                                            Farming.first_day_of_week == first_day_of_week), many=True)
 

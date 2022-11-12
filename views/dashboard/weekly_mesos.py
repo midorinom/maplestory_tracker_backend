@@ -33,7 +33,7 @@ def get_weekly_mesos():
 
         data = weekly_mesos_schema.load(json_data)
 
-        # Check if there is are existing entries for this week. If there is none, make a new entry for this week
+        # Check if there is an existing entry for this week. If there is none, make a new entry for this week
         weekly_mesos = weekly_mesos_schema.dump(
             WeeklyMesos.query.filter(
                 WeeklyMesos.username == data["username"],

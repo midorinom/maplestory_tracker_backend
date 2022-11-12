@@ -5,6 +5,7 @@ from models.progression.ProgressionSecondaryEmblem import \
     ProgressionSecondaryEmblem, progression_secondary_emblem_schema
 from models.progression.ProgressionSingleField import ProgressionSingleField, progression_single_field_schema
 from models.progression.ProgressionWeapons import ProgressionWeapons, progression_weapons_schema
+from models.progression.Items import Items, items_schema
 
 progression_blueprint = Blueprint("progression", __name__)
 
@@ -297,5 +298,29 @@ def update_weapon():
 
         response = {
             "message": "an error has occured when updating waepon"
+        }
+        return jsonify(response), 400
+
+
+# Get Items
+@progression_blueprint.post("/progression/items/get")
+def get_items():
+    json_data = request.get_json()
+
+    try:
+        items = items_schema.dump(
+            (Items.query.filter(Items.region == json_data["role"], Items.slot == json_data["slot"])), many=True)
+
+        response = {
+            "message": "Got items",
+            "items": items
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting items"
         }
         return jsonify(response), 400

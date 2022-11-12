@@ -40,6 +40,7 @@ from views.events.events import events_blueprint
 from views.farming.farming import farming_blueprint
 from views.dashboard.weekly_mesos import weekly_mesos_blueprint
 from views.progression.progression import progression_blueprint
+from views.progression.progressionAdmin import progression_admin_blueprint
 
 app.register_blueprint(views_enums_blueprint)
 app.register_blueprint(users_blueprint)
@@ -54,3 +55,4 @@ app.register_blueprint(events_blueprint)
 app.register_blueprint(farming_blueprint)
 app.register_blueprint(weekly_mesos_blueprint)
 app.register_blueprint(progression_blueprint)
+app.register_blueprint(progression_admin_blueprint)

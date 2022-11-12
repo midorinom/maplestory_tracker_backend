@@ -3,7 +3,6 @@ from models.others.Enums import Roles
 from models.others.Enums import Classes
 from models.others.Enums import Tracking
 from models.others.Enums import Slots
-from models.others.Enums import ItemNames
 
 
 views_enums_blueprint = Blueprint("views_enums", __name__)

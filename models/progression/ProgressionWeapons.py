@@ -8,7 +8,7 @@ class ProgressionWeapons(db.Model):
     __tablename__ = "progression_weapons"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
-    name = db.Column(db.VARCHAR(30), db.ForeignKey("item_names_enum.item_names"), default=None)
+    name = db.Column(db.VARCHAR(30), default=None)
     starforce = db.Column(db.SMALLINT, default=0)
     pot_att = db.Column(db.SMALLINT, default=0)
     pot_boss = db.Column(db.SMALLINT, default=0)

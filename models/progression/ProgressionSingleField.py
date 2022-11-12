@@ -4,8 +4,8 @@ import uuid
 from marshmallow import Schema, fields
 
 
-class ProgressionOneField(db.Model):
-    __tablename__ = "progression_one_field"
+class ProgressionSingleField(db.Model):
+    __tablename__ = "progression_single_field"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
     slot = db.Column(db.VARCHAR(20), db.ForeignKey("slots_enum.slots"))
@@ -17,7 +17,7 @@ class ProgressionOneField(db.Model):
         self.slot = slot
 
 
-class ProgressionOneFieldSchema(Schema):
+class ProgressionSingleFieldSchema(Schema):
     uuid = fields.UUID()
     character = fields.UUID()
     slot = fields.Str()
@@ -25,4 +25,4 @@ class ProgressionOneFieldSchema(Schema):
     value = fields.Int()
 
 
-progression_one_field_schema = ProgressionOneFieldSchema()
+progression_single_field_schema = ProgressionSingleFieldSchema()

@@ -18,8 +18,9 @@ def get_weeklies():
         date_list = json_data["date"].split("-")
         date_list = [int(i) for i in date_list]
         date = datetime.date(*date_list)
-        # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date.
-        # The operation involving timedelta returns a datetime Object. strftime formats it back to a string.
+
+        # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date
+        # The operation involving timedelta returns a datetime Object. strftime formats it back to a string
         first_day_of_week = (date + datetime.timedelta(days=-date.weekday())).strftime("%Y-%m-%d")
 
         # Remove date from json_data, add first_day_of_week, then load json_data

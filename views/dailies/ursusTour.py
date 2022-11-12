@@ -1,6 +1,7 @@
 from app import db
 from flask import request, jsonify, Blueprint
 from models.dailies.UrsusTour import UrsusTour, ursus_tour_schema
+import datetime
 
 ursus_tour_blueprint = Blueprint("ursus_tour", __name__)
 
@@ -25,7 +26,15 @@ def get_ursus_tour():
             response["ursus_tour"] = ursus_tour[0]
         else:
             # Make a new entry for today's date and add it to the response
-            new_ursus_tour = UrsusTour(username=data["username"], date=data["date"])
+
+            # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date
+            # Then add 3 to get Thursday, which is the day when the bossing week resets
+            # The operation involving timedelta returns a datetime Object. strftime formats it back to a string
+            first_day_of_bossing_week = (
+                    data["date"] + datetime.timedelta(days=-data["date"].weekday()+3)).strftime("%Y-%m-%d")
+
+            new_ursus_tour = UrsusTour(
+                username=data["username"], date=data["date"], first_day_of_bossing_week=first_day_of_bossing_week)
             db.session.add(new_ursus_tour)
             db.session.commit()
 

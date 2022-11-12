@@ -17,8 +17,9 @@ def get_farming():
         date_list = json_data["date"].split("-")
         date_list = [int(i) for i in date_list]
         date = datetime.date(*date_list)
-        # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date.
-        # The operation involving timedelta returns a datetime Object. strftime formats it back to a string.
+
+        # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date
+        # The operation involving timedelta returns a datetime Object. strftime formats it back to a string
         first_day_of_week = (date + datetime.timedelta(days=-date.weekday())).strftime("%Y-%m-%d")
 
         # Remove date from json_data, add first_day_of_week, then load json_data
@@ -37,7 +38,7 @@ def get_farming():
                                                            Farming.first_day_of_week == first_day_of_week), many=True)
 
         if len(farming) > 0:
-            response["farming"] = farming[0]
+            response["farming"] = farming
         else:
             # Change existing entries with is_current_week == True to False
             Farming.query.filter(
@@ -47,12 +48,14 @@ def get_farming():
             # Make new entries for this week
             new_farming = []
             first_day_of_week = date + datetime.timedelta(days=-date.weekday())
+            first_day_of_bossing_week = date + datetime.timedelta(days=-date.weekday()+3)
 
             loop = range(7)
             for i in loop:
                 new_farming.append(
                     Farming(character=data["character"],
-                            date=first_day_of_week + datetime.timedelta(days=i), first_day_of_week=first_day_of_week))
+                            date=first_day_of_week + datetime.timedelta(days=i),
+                            first_day_of_week=first_day_of_week, first_day_of_bossing_week=first_day_of_bossing_week))
 
             db.session.add_all(new_farming)
             db.session.commit()

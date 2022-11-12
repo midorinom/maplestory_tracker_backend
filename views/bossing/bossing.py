@@ -14,18 +14,19 @@ def get_bossing():
     json_data = request.get_json()
 
     try:
-        # Using today's date, get the first_day_of_week
+        # Using today's date, get the first_day_of_bossing_week
         date_list = json_data["date"].split("-")
         date_list = [int(i) for i in date_list]
         date = datetime.date(*date_list)
-        # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date.
-        # Then add 3 to get Thursday, which is the day when the bossing week resets.
-        # The operation involving timedelta returns a datetime Object. strftime formats it back to a string.
-        first_day_of_week = (date + datetime.timedelta(days=-date.weekday()+3)).strftime("%Y-%m-%d")
 
-        # Remove date from json_data, add first_day_of_week
+        # timedelta subtracts the current weekday (converted to a value) from today's date, to get Monday's date
+        # Then add 3 to get Thursday, which is the day when the bossing week resets
+        # The operation involving timedelta returns a datetime Object. strftime formats it back to a string
+        first_day_of_bossing_week = (date + datetime.timedelta(days=-date.weekday()+3)).strftime("%Y-%m-%d")
+
+        # Remove date from json_data, add first_day_of_bossing_week
         json_data.pop("date")
-        json_data["first_day_of_week"] = first_day_of_week
+        json_data["first_day_of_bossing_week"] = first_day_of_bossing_week
 
         # Store level and role in a variable, then remove them from json_data, then load json_data
         level = json_data["level"]
@@ -42,8 +43,8 @@ def get_bossing():
         }
 
         # Check if there is an existing entry for this week. If so, add it to the response
-        bossing = bossing_schema.dump(Bossing.query.filter(Bossing.character == data["character"],
-                                                           Bossing.first_day_of_week == first_day_of_week))
+        bossing = bossing_schema.dump(Bossing.query.filter(
+            Bossing.character == data["character"], Bossing.first_day_of_bossing_week == first_day_of_bossing_week))
 
         if len(bossing) > 0:
             response["bossing"] = bossing[0]
@@ -56,11 +57,11 @@ def get_bossing():
 
             if len(existing_bossing) == 2:
                 # There are 2 existing entries. Check which one is the latest
-                date1_list = existing_bossing[0]["first_day_of_week"].split("-")
+                date1_list = existing_bossing[0]["first_day_of_bossing_week"].split("-")
                 date1_list = [int(i) for i in date1_list]
                 date1 = datetime.date(*date1_list)
 
-                date2_list = existing_bossing[1]["first_day_of_week"].split("-")
+                date2_list = existing_bossing[1]["first_day_of_bossing_week"].split("-")
                 date2_list = [int(i) for i in date2_list]
                 date2 = datetime.date(*date2_list)
 
@@ -95,7 +96,7 @@ def get_bossing():
                     bossing_list = "@".join(bosses)
 
             # Make an entry for this week
-            new_bossing = Bossing(character=data["character"], first_day_of_week=first_day_of_week,
+            new_bossing = Bossing(character=data["character"], first_day_of_bossing_week=first_day_of_bossing_week,
                                   bossing_list=bossing_list)
             db.session.add(new_bossing)
             db.session.commit()

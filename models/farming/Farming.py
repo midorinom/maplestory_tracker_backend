@@ -10,15 +10,17 @@ class Farming(db.Model):
     character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
     date = db.Column(db.DATE)
     first_day_of_week = db.Column(db.DATE)
+    first_day_of_bossing_week = db.Column(db.DATE)
     is_current_week = db.Column(db.BOOLEAN, default=True)
     hours = db.Column(db.SMALLINT)
     minutes = db.Column(db.SMALLINT)
     mesos = db.Column(db.BIGINT)
 
-    def __init__(self, character, date, first_day_of_week):
+    def __init__(self, character, date, first_day_of_week, first_day_of_bossing_week):
         self.character = character
         self.date = date
         self.first_day_of_week = first_day_of_week
+        self.first_day_of_bossing_week = first_day_of_bossing_week
 
 
 class FarmingSchema(Schema):
@@ -26,6 +28,7 @@ class FarmingSchema(Schema):
     character = fields.UUID()
     date = fields.Date()
     first_day_of_week = fields.Date()
+    first_day_of_bossing_week = fields.Date()
     is_current_week = fields.Bool()
     hours = fields.Int()
     minutes = fields.Int()

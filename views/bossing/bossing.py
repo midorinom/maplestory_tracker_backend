@@ -2,7 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.bossing.Bossing import Bossing, bossing_schema
 import datetime
-from models.NonRelational import Bosses, bosses_schema
+from models.others.NonRelational import Bosses, bosses_schema
 
 
 bossing_blueprint = Blueprint("bossing", __name__)

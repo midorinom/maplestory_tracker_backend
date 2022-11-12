@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint
-from models.Enums import Roles
-from models.Enums import Classes
-from models.Enums import Tracking
+from models.others.Enums import Roles
+from models.others.Enums import Classes
+from models.others.Enums import Tracking
 
 
 views_enums_blueprint = Blueprint("views_enums", __name__)

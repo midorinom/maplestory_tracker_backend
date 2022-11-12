@@ -2,7 +2,7 @@ from app import db
 from flask import request, jsonify, Blueprint
 from models.dailies.Dailies import Dailies, dailies_schema
 import datetime
-from models.NonRelational import DailiesDefault
+from models.others.NonRelational import DailiesDefault
 
 
 dailies_blueprint = Blueprint("dailies", __name__)

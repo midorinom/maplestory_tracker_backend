@@ -20,23 +20,23 @@ migrate = Migrate(app, db)
 
 
 # Register models blueprints
-from models.Enums import models_enums_blueprint
-from models.NonRelational import non_relational_blueprint
+from models.others.Enums import models_enums_blueprint
+from models.others.NonRelational import non_relational_blueprint
 
 app.register_blueprint(models_enums_blueprint)
 app.register_blueprint(non_relational_blueprint)
 
 # Register views blueprints
-from views.enums import views_enums_blueprint
-from views.users import users_blueprint
-from views.characters import characters_blueprint
-from views.dailies import dailies_blueprint
-from views.weeklies import weeklies_blueprint
-from views.ursusTour import ursus_tour_blueprint
-from views.bossing import bossing_blueprint
-from views.legion import legion_blueprint
-from views.eventsAdmin import events_admin_blueprint
-from views.events import events_blueprint
+from views.others.enums import views_enums_blueprint
+from views.users.users import users_blueprint
+from views.characters.characters import characters_blueprint
+from views.dailies.dailies import dailies_blueprint
+from views.dailies.weeklies import weeklies_blueprint
+from views.dailies.ursusTour import ursus_tour_blueprint
+from views.bossing.bossing import bossing_blueprint
+from views.legion.legion import legion_blueprint
+from views.events.eventsAdmin import events_admin_blueprint
+from views.events.events import events_blueprint
 
 app.register_blueprint(views_enums_blueprint)
 app.register_blueprint(users_blueprint)

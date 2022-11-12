@@ -14,7 +14,7 @@ class Farming(db.Model):
     is_current_week = db.Column(db.BOOLEAN, default=True)
     hours = db.Column(db.SMALLINT)
     minutes = db.Column(db.SMALLINT)
-    mesos = db.Column(db.BIGINT)
+    mesos = db.Column(db.BIGINT, default=0)
 
     def __init__(self, character, date, first_day_of_week, first_day_of_bossing_week):
         self.character = character

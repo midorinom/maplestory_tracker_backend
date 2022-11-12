@@ -4,6 +4,7 @@ from models.dashboard.WeeklyMesos import WeeklyMesos, weekly_mesos_schema
 import datetime
 from models.dailies.UrsusTour import UrsusTour, ursus_tour_schema
 from models.farming.Farming import Farming, farming_schema
+from models.characters.Characters import Characters
 from functools import reduce
 
 
@@ -53,18 +54,37 @@ def get_weekly_mesos():
                 UrsusTour.username == data["username"],
                 UrsusTour.first_day_of_bossing_week == first_day_of_bossing_week), many=True)
 
-        # Sum up the total mesos for ursus and tour respectively
-        ursus = [element["ursus"] for element in ursus_tour]
-        tour = [element["tour"] for element in ursus_tour]
+        # If there are entries, sum up the total mesos for ursus and tour respectively
+        if len(ursus_tour) > 0:
+            ursus = [element["ursus"] for element in ursus_tour]
+            tour = [element["tour"] for element in ursus_tour]
 
-        ursus_total = reduce(lambda a, b: a + b, ursus)
-        tour_total = reduce(lambda a, b: a + b, tour)
+            ursus_total = reduce(lambda a, b: a + b, ursus)
+            tour_total = reduce(lambda a, b: a + b, tour)
+        else:
+            ursus_total = 0
+            tour_total = 0
 
-        # Update the newly weekly_mesos for this week with the new ursus and tour totals
+        # Query for the farming entries for this week
+        # Raw: SELECT * from farming WHERE character IN(SELECT uuid from characters WHERE username = data["username"])
+        farming = farming_schema.dump(
+            Farming.query.filter(
+                Farming.character.in_(
+                    Characters.query.filter(
+                        Characters.username == data["username"]).with_entities(Characters.uuid))), many=True)
+
+        # If there are entries, sum up total mesos for farming
+        if len(farming) > 0:
+            farming = [element["mesos"] for element in farming]
+            farming_total = reduce(lambda a, b: a + b, farming)
+        else:
+            farming_total = 0
+
+        # Update the newly weekly_mesos for this week with the new ursus, tour and farming totals
         WeeklyMesos.query.filter(
             WeeklyMesos.username == data["username"],
             WeeklyMesos.first_day_of_bossing_week == first_day_of_bossing_week).update(
-            {"ursus": ursus_total, "tour": tour_total})
+            {"ursus": ursus_total, "tour": tour_total, "farming": farming_total})
         db.session.commit()
 
         # Query again for the newly updated Weekly Mesos entry for this week

@@ -2,6 +2,7 @@ from app import app, db
 from flask import request, jsonify, Blueprint
 from models.users.Users import Users, users_schema
 from flask_bcrypt import Bcrypt
+from sqlalchemy.exc import IntegrityError
 
 
 users_blueprint = Blueprint("users", __name__)
@@ -31,6 +32,12 @@ def register():
              "message": "User is created",
          }
         return jsonify(response), 201
+
+    except IntegrityError:
+        response = {
+            "message": "Duplicate username"
+        }
+        return jsonify(response), 400
 
     except Exception as err:
         print(err)
@@ -89,7 +96,7 @@ def login():
             return jsonify(response), 200
         else:
             response = {
-                "message": "Unauthorised, users failed",
+                "message": "Unauthorised, login failed",
             }
             return jsonify(response), 401
 

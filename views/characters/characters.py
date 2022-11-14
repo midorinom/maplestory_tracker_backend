@@ -17,7 +17,8 @@ def create_character():
 
         # Check if the same character has already been created by this user
         duplicate_character = characters_schema.dump(Characters.query.join(Users).filter(
-                               Characters.username == data["username"], Characters.ign == data["ign"]))
+                               Characters.username == data["username"], Characters.ign == data["ign"]), many=True)
+        print(duplicate_character)
         if duplicate_character:
             response = {
                 "message": "This character has already been created"
@@ -25,8 +26,8 @@ def create_character():
             return jsonify(response), 400
 
         else:
-            new_character = Characters(username=data["username"], class_name=data["class_name"], ign=data["ign"],
-                                       level=data["level"])
+            new_character = Characters(username=data["username"],
+                                       class_name=(data["class_name"]).upper(), ign=data["ign"], level=data["level"])
             db.session.add(new_character)
             db.session.commit()
 

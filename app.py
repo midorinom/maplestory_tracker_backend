@@ -29,7 +29,7 @@ app.register_blueprint(non_relational_blueprint)
 # Register views blueprints
 from views.others.enums import views_enums_blueprint
 from views.users.users import users_blueprint
-from views.characters.characters import characters_blueprint
+from views.dashboard.characters import characters_blueprint
 from views.dailies.dailies import dailies_blueprint
 from views.dailies.weeklies import weeklies_blueprint
 from views.dailies.ursusTour import ursus_tour_blueprint

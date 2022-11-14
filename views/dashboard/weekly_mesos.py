@@ -4,7 +4,7 @@ from models.dashboard.WeeklyMesos import WeeklyMesos, weekly_mesos_schema
 import datetime
 from models.dailies.UrsusTour import UrsusTour, ursus_tour_schema
 from models.farming.Farming import Farming, farming_schema
-from models.characters.Characters import Characters
+from models.dashboard.Characters import Characters
 from functools import reduce
 
 

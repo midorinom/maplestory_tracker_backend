@@ -1,6 +1,6 @@
 from app import db
 from flask import request, jsonify, Blueprint
-from models.characters.Characters import Characters, characters_schema
+from models.dashboard.Characters import Characters, characters_schema
 from models.users.Users import Users
 
 

@@ -15,6 +15,7 @@ class Roles(db.Model):
 class Classes(db.Model):
     __tablename__ = "classes_enum"
     classes = db.Column(db.VARCHAR(20), primary_key=True)
+    region = db.Column(db.VARCHAR(20), db.ForeignKey("roles_enum.roles"))
 
 
 # Tracking

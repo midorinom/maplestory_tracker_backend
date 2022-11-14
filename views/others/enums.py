@@ -1,4 +1,5 @@
-from flask import jsonify, Blueprint
+from flask import request, jsonify, Blueprint
+from sqlalchemy import or_
 from models.others.Enums import Roles
 from models.others.Enums import Classes
 from models.others.Enums import Tracking
@@ -31,10 +32,13 @@ def get_roles():
 
 
 # Get Classes
-@views_enums_blueprint.get("/enums/classes/get")
+@views_enums_blueprint.post("/enums/classes/get")
 def get_classes():
+    json_data = request.get_json()
+
     try:
-        classes = Classes.query.order_by(Classes.classes.asc()).all()
+        classes = Classes.query.order_by(Classes.classes.asc()).filter(
+            or_(Classes.region == json_data["role"], Classes.region == "BOTH"))
         classes = [element.classes.title() for element in classes]
 
         response = {

@@ -16,6 +16,7 @@ class Characters(db.Model):
     stats = db.Column(db.INT)
     dojo = db.Column(db.SMALLINT)
     ba = db.Column(db.SMALLINT)
+    image = db.Column(db.LargeBinary)
 
     def __init__(self, username, class_name, ign, level):
         self.username = username
@@ -35,6 +36,7 @@ class CharactersSchema(Schema):
     stats = fields.Int()
     dojo = fields.Int()
     ba = fields.Int()
+    image = fields.Raw()
 
 
 characters_schema = CharactersSchema()

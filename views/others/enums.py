@@ -34,8 +34,8 @@ def get_roles():
 @views_enums_blueprint.get("/enums/classes/get")
 def get_classes():
     try:
-        classes = Classes.query.all()
-        classes = [element.classes for element in classes]
+        classes = Classes.query.order_by(Classes.classes.asc()).all()
+        classes = [element.classes.title() for element in classes]
 
         response = {
             "message": "Got classes enum",

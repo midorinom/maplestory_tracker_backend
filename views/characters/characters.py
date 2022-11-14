@@ -55,9 +55,20 @@ def get_all_characters():
         characters = characters_schema.dump(Characters.query.order_by(Characters.level.desc()).filter(
             Characters.username == data["username"]), many=True)
 
+        main = characters_schema.dump(Characters.query.filter(Characters.is_main == True), many=True)
+        if len(main) > 0:
+            main = main[0]
+
+            # Get a new characters list without the main character
+            characters_filtered = [character for character in characters if character["is_main"] == False]
+            characters = characters_filtered
+        else:
+            main = None
+
         response = {
             "message": "Got characters",
-            "characters": characters
+            "characters": characters,
+            "main": main
         }
         return jsonify(response), 200
 

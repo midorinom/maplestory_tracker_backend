@@ -158,6 +158,10 @@ def get_all_characters():
         # Remove image (cannot be sent as JSON)
         characters = [{k: v for k, v in character.items() if k != "image"} for character in characters]
 
+        # Convert to Title
+        for character in characters:
+            character["class_name"] = character["class_name"].title()
+
         response = {
             "message": "Got characters",
             "characters": characters,

@@ -97,9 +97,6 @@ def upload_image(char_uuid):
 
                     character.image = bytes_
 
-                # character = Characters.query.get(char_uuid)
-                # character.image = 'uploads/' + filename
-
                 db.session.commit()
 
                 # Delete from flask
@@ -119,7 +116,7 @@ def upload_image(char_uuid):
 
 
 # Get Image
-@characters_blueprint.post("/characters/get-image/<char_uuid>")
+@characters_blueprint.get("/characters/get-image/<char_uuid>")
 def get_image(char_uuid):
     try:
         character = characters_schema.dump(Characters.query.filter(Characters.uuid == char_uuid), many=True)

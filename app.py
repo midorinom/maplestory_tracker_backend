@@ -10,7 +10,7 @@ from flask_migrate import Migrate
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, expose_headers=["Content-Disposition"])
 
 database_uri = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_DATABASE_URI"] = database_uri

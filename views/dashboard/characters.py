@@ -1,14 +1,20 @@
+import base64
+
+import psycopg2
+
 from app import app, db
 import os
-from flask import request, jsonify, Blueprint, redirect, url_for
+from flask import request, jsonify, Blueprint, send_file
 from models.dashboard.Characters import Characters, characters_schema
 from models.users.Users import Users
 from werkzeug.utils import secure_filename
+import io
+from io import BytesIO
 
 characters_blueprint = Blueprint("characters", __name__)
 
 # Handling Uploads
-UPLOAD_FOLDER = './uploads'
+UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000  # 10MB limit
@@ -65,24 +71,35 @@ def create_character():
 @characters_blueprint.post("/characters/upload/<char_uuid>")
 def upload_image(char_uuid):
     try:
-        print("files", request.files)
         if 'file' not in request.files:
-            print("here1")
-            image = None
+            response = {
+                "message": "an error has occured when uploading the image"
+            }
+            return jsonify(response), 400
         else:
             file = request.files['file']
+
             if file.filename == '':
-                print("here2")
-                image = None
+                response = {
+                    "message": "an error has occured when uploading the image"
+                }
+                return jsonify(response), 400
+
             if file and allowed_file(file.filename):
-                print("here3")
                 # Save the image to flask
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename))
 
                 # Read the image file and then insert into the database
-                data = request.files['file'].read()
-                Characters.query.filter(Characters.uuid == char_uuid).update({"image": data})
+                with open('uploads/' + filename, 'rb') as f:
+                    bytes_ = f.read()
+                    character = Characters.query.get(char_uuid)
+
+                    character.image = bytes_
+
+                # character = Characters.query.get(char_uuid)
+                # character.image = 'uploads/' + filename
+
                 db.session.commit()
 
                 # Delete from flask
@@ -101,6 +118,24 @@ def upload_image(char_uuid):
         return jsonify(response), 400
 
 
+# Get Image
+@characters_blueprint.post("/characters/get-image/<char_uuid>")
+def get_image(char_uuid):
+    try:
+        character = characters_schema.dump(Characters.query.filter(Characters.uuid == char_uuid), many=True)
+
+        image_binary = character[0]["image"]
+
+        return send_file(io.BytesIO(image_binary), mimetype="image/png"), 200
+
+    except Exception as err:
+        print(err)
+        response = {
+            "message": "an error has occured when getting the image"
+        }
+        return jsonify(response), 400
+
+
 # Get All Characters
 @characters_blueprint.post("/characters/get/all")
 def get_all_characters():
@@ -112,6 +147,7 @@ def get_all_characters():
         characters = characters_schema.dump(Characters.query.order_by(Characters.level.desc()).filter(
             Characters.username == data["username"]), many=True)
 
+        # Check if there is a main character
         main = characters_schema.dump(Characters.query.filter(Characters.is_main == True), many=True)
         if len(main) > 0:
             main = main[0]
@@ -121,6 +157,9 @@ def get_all_characters():
             characters = characters_filtered
         else:
             main = None
+
+        # Remove image (cannot be sent as JSON)
+        characters = [{k: v for k, v in character.items() if k != "image"} for character in characters]
 
         response = {
             "message": "Got characters",

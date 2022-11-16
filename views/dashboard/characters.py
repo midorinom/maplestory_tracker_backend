@@ -147,6 +147,7 @@ def get_all_characters():
         # Check if there is a main character
         main = characters_schema.dump(Characters.query.filter(Characters.is_main == True), many=True)
         if len(main) > 0:
+            del main[0]["image"]
             main = main[0]
 
             # Get a new characters list without the main character

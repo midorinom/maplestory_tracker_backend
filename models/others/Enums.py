@@ -18,12 +18,6 @@ class Classes(db.Model):
     region = db.Column(db.VARCHAR(20), db.ForeignKey("roles_enum.roles"))
 
 
-# Tracking
-class Tracking(db.Model):
-    __tablename__ = "tracking_enum"
-    tracking = db.Column(db.VARCHAR(20), primary_key=True)
-
-
 # Slots
 class Slots(db.Model):
     __tablename__ = "slots_enum"

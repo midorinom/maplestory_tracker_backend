@@ -11,12 +11,12 @@ class Characters(db.Model):
     class_name = db.Column(db.VARCHAR(20), db.ForeignKey("classes_enum.classes"))
     ign = db.Column(db.VARCHAR(12))
     level = db.Column(db.SMALLINT)
-    tracking = db.Column(db.VARCHAR(20), db.ForeignKey("tracking_enum.tracking"))
+    tracking = db.Column(db.VARCHAR(60), default="dailies@bossing@progression@farming@events")
     is_main = db.Column(db.BOOLEAN, default=False)
-    stats = db.Column(db.INT)
-    dojo = db.Column(db.SMALLINT)
-    ba = db.Column(db.SMALLINT)
-    image = db.Column(db.LargeBinary)
+    stats = db.Column(db.INT, nullable=True)
+    dojo = db.Column(db.SMALLINT, nullable=True)
+    ba = db.Column(db.SMALLINT, nullable=True)
+    image = db.Column(db.LargeBinary, nullable=True)
 
     def __init__(self, username, class_name, ign, level):
         self.username = username
@@ -33,10 +33,10 @@ class CharactersSchema(Schema):
     level = fields.Int()
     tracking = fields.Str()
     is_main = fields.Bool()
-    stats = fields.Int()
-    dojo = fields.Int()
-    ba = fields.Int()
-    image = fields.Raw()
+    stats = fields.Int(allow_none=True)
+    dojo = fields.Int(allow_none=True)
+    ba = fields.Int(allow_none=True)
+    image = fields.Raw(allow_none=True)
 
 
 characters_schema = CharactersSchema()

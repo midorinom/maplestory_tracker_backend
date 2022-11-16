@@ -2,7 +2,6 @@ from flask import request, jsonify, Blueprint
 from sqlalchemy import or_
 from models.others.Enums import Roles
 from models.others.Enums import Classes
-from models.others.Enums import Tracking
 from models.others.Enums import Slots
 
 
@@ -56,28 +55,6 @@ def get_classes():
         return jsonify(response), 400
 
 
-# Get Tracking
-@views_enums_blueprint.get("/enums/tracking/get")
-def get_tracking():
-    try:
-        tracking = Tracking.query.all()
-        tracking = [element.tracking for element in tracking]
-
-        response = {
-            "message": "Got tracking enum",
-            "tracking": tracking
-        }
-        return jsonify(response), 200
-
-    except Exception as err:
-        print(err)
-
-        response = {
-            "message": "an error has occured when getting tracking enum"
-        }
-        return jsonify(response), 400
-
-
 # Get Slots
 @views_enums_blueprint.get("/enums/slots/get")
 def get_slots():
@@ -96,27 +73,5 @@ def get_slots():
 
         response = {
             "message": "an error has occured when getting slots enum"
-        }
-        return jsonify(response), 400
-
-
-# Get Item Names
-@views_enums_blueprint.get("/enums/item-names/get")
-def get_item_names():
-    try:
-        item_names = ItemNames.query.all()
-        item_names = [element.item_names for element in item_names]
-
-        response = {
-            "message": "Got item names enum",
-            "item_names": item_names
-        }
-        return jsonify(response), 200
-
-    except Exception as err:
-        print(err)
-
-        response = {
-            "message": "an error has occured when getting item names enum"
         }
         return jsonify(response), 400

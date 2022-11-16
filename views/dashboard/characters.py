@@ -184,6 +184,7 @@ def update_character():
     json_data = request.get_json()
 
     try:
+        json_data["class_name"] = json_data["class_name"].upper()
         data = characters_schema.load(json_data)
 
         Characters.query.filter(Characters.uuid == data["uuid"]).update(

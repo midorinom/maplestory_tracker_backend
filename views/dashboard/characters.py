@@ -178,6 +178,33 @@ def get_all_characters():
         return jsonify(response), 400
 
 
+# Get One Character
+@characters_blueprint.post("/characters/get")
+def get_character():
+    json_data = request.get_json()
+
+    try:
+        data = characters_schema.load(json_data)
+
+        character = Characters.query.get(data.uuid)
+        del character["image"]
+        character["class_name"] = character["class_name"].title()
+
+        response = {
+            "message": "Got character",
+            "character": character
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting character"
+        }
+        return jsonify(response), 400
+
+
 # Update Character
 @characters_blueprint.patch("/characters/update")
 def update_character():

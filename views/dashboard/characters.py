@@ -204,6 +204,32 @@ def get_character():
         return jsonify(response), 400
 
 
+# Get Characters with tracking
+@characters_blueprint.post("/characters/get/tracking")
+def get_characters_tracking():
+    json_data = request.get_json()
+
+    try:
+        characters = characters_schema.dump(Characters.query.filter(
+            Characters.tracking.contains(json_data["tracking"])), many=True)
+
+        characters = [{k: v for k, v in character.items() if k != "image"} for character in characters]
+
+        response = {
+            "message": "Got characters with tracking",
+            "characters": characters
+        }
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting characters with tracking"
+        }
+        return jsonify(response), 400
+
+
 # Update Character
 @characters_blueprint.patch("/characters/update")
 def update_character():

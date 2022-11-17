@@ -148,14 +148,12 @@ def get_all_characters():
         main = characters_schema.dump(Characters.query.filter(Characters.is_main == True), many=True)
         if len(main) > 0:
             main = main[0]
-            del main["image"]
             main["class_name"] = main["class_name"].title()
 
             # Get a new characters list without the main character
             characters_filtered = [character for character in characters if character["is_main"] == False]
+            characters_filtered.insert(0, main)
             characters = characters_filtered
-        else:
-            main = None
 
         # Remove image (cannot be sent as JSON)
         characters = [{k: v for k, v in character.items() if k != "image"} for character in characters]
@@ -164,10 +162,11 @@ def get_all_characters():
         for character in characters:
             character["class_name"] = character["class_name"].title()
 
+        print(characters)
+
         response = {
             "message": "Got characters",
             "characters": characters,
-            "main": main
         }
         return jsonify(response), 200
 

@@ -162,8 +162,6 @@ def get_all_characters():
         for character in characters:
             character["class_name"] = character["class_name"].title()
 
-        print(characters)
-
         response = {
             "message": "Got characters",
             "characters": characters,
@@ -212,7 +210,9 @@ def update_character():
     json_data = request.get_json()
 
     try:
-        json_data["class_name"] = json_data["class_name"].upper()
+        if "class_name" in json_data.keys():
+            json_data["class_name"] = json_data["class_name"].upper()
+
         data = characters_schema.load(json_data)
 
         Characters.query.filter(Characters.uuid == data["uuid"]).update(

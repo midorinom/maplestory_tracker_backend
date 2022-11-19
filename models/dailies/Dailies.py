@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class Dailies(db.Model):
     __tablename__ = "dailies"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
+    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid", ondelete="CASCADE"))
     date = db.Column(db.DATE)
     is_current_day = db.Column(db.BOOLEAN, default=True)
     dailies_list = db.Column(db.TEXT)

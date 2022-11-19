@@ -1,13 +1,13 @@
 from app import db
-from sqlalchemy.dialects.postgresql import UUID
 import uuid
+from sqlalchemy.dialects.postgresql import UUID
 from marshmallow import Schema, fields
 
 
 class Weeklies(db.Model):
     __tablename__ = "weeklies"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
+    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid", ondelete="CASCADE"))
     first_day_of_week = db.Column(db.DATE)
     is_current_week = db.Column(db.BOOLEAN, default=True)
     weeklies_list = db.Column(db.TEXT)

@@ -1,8 +1,7 @@
-from sqlalchemy.orm import relationship
-
 from app import db
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
+from sqlalchemy.orm import relationship
 from marshmallow import Schema, fields
 
 
@@ -19,6 +18,8 @@ class Characters(db.Model):
     dojo = db.Column(db.SMALLINT, nullable=True)
     ba = db.Column(db.SMALLINT, nullable=True)
     image = db.Column(db.LargeBinary, nullable=True)
+    dailies = relationship("Dailies", backref="characters", passive_deletes=True)
+    weeklies = relationship("Weeklies", backref="characters", passive_deletes=True)
 
     def __init__(self, username, class_name, ign, level):
         self.username = username

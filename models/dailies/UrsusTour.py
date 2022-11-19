@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class UrsusTour(db.Model):
     __tablename__ = "ursus_tour"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username"))
+    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username", ondelete="CASCADE"))
     date = db.Column(db.DATE)
     first_day_of_bossing_week = db.Column(db.DATE)
     ursus = db.Column(db.INT, default=0)

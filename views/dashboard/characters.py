@@ -145,12 +145,12 @@ def get_all_characters():
             Characters.username == data["username"]), many=True)
 
         # Check if there is a main character
-        main = characters_schema.dump(Characters.query.filter(Characters.is_main == True), many=True)
+        main = characters_schema.dump(Characters.query.filter(
+            Characters.username == data["username"], Characters.is_main == True), many=True)
         if len(main) > 0:
             main = main[0]
-            main["class_name"] = main["class_name"].title()
 
-            # Get a new characters list without the main character
+            # Get a new characters list without the main character and insert the main into the front
             characters_filtered = [character for character in characters if character["is_main"] == False]
             characters_filtered.insert(0, main)
             characters = characters_filtered
@@ -210,10 +210,28 @@ def get_characters_tracking():
     json_data = request.get_json()
 
     try:
-        characters = characters_schema.dump(Characters.query.filter(
-            Characters.tracking.contains(json_data["tracking"])), many=True)
+        characters = characters_schema.dump(Characters.query.order_by(Characters.level.desc()).filter(
+            Characters.username == json_data["username"], Characters.tracking.contains(json_data["tracking"])),
+            many=True)
 
+        # Check if there is a main character
+        main = characters_schema.dump(Characters.query.filter(
+            Characters.username == json_data["username"], Characters.is_main == True), many=True)
+        if len(main) > 0:
+            main = main[0]
+            main["class_name"] = main["class_name"].title()
+
+        # Get a new characters list without the main character and insert the main into the front
+            characters_filtered = [character for character in characters if character["is_main"] == False]
+            characters_filtered.insert(0, main)
+            characters = characters_filtered
+
+        # Remove image (cannot be sent as JSON)
         characters = [{k: v for k, v in character.items() if k != "image"} for character in characters]
+
+        # Convert class name to title
+        for character in characters:
+            character["class_name"] = character["class_name"].title()
 
         response = {
             "message": "Got characters with tracking",

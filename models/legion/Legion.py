@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class Legion(db.Model):
     __tablename__ = "legion"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username"))
+    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username", ondelete="CASCADE"))
     class_name = db.Column(db.VARCHAR(20), db.ForeignKey("classes_enum.classes"))
     level = db.Column(db.SMALLINT)
 

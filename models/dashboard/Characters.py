@@ -18,8 +18,20 @@ class Characters(db.Model):
     dojo = db.Column(db.SMALLINT, nullable=True)
     ba = db.Column(db.SMALLINT, nullable=True)
     image = db.Column(db.LargeBinary, nullable=True)
+
+    # Relationships
     dailies = relationship("Dailies", backref="characters", passive_deletes=True)
     weeklies = relationship("Weeklies", backref="characters", passive_deletes=True)
+    bossing = relationship("Bossing", backref="characters", passive_deletes=True)
+    user_character_currency = relationship("UserCharacterCurrency", backref="characters", passive_deletes=True)
+    user_character_shops = relationship("UserCharacterShops", backref="characters", passive_deletes=True)
+    farming = relationship("Farming", backref="characters", passive_deletes=True)
+    progression_gear = relationship("ProgressionGear", backref="characters", passive_deletes=True)
+    progression_secondary_emblem = relationship(
+        "ProgressionSecondaryEmblem", backref="characters", passive_deletes=True)
+    progression_single_field = relationship("ProgressionSingleField", backref="characters", passive_deletes=True)
+    progression_weapons = relationship(
+        "ProgressionWeapons", backref="characters", passive_deletes=True)
 
     def __init__(self, username, class_name, ign, level):
         self.username = username

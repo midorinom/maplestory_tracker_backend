@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class ProgressionSingleField(db.Model):
     __tablename__ = "progression_single_field"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
+    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid", ondelete="CASCADE"))
     slot = db.Column(db.VARCHAR(20), db.ForeignKey("slots_enum.slots"))
     name = db.Column(db.VARCHAR(30), default=None)
     value = db.Column(db.SMALLINT, default=0)

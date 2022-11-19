@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class Farming(db.Model):
     __tablename__ = "farming"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
+    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid", ondelete="CASCADE"))
     date = db.Column(db.DATE)
     first_day_of_week = db.Column(db.DATE)
     first_day_of_bossing_week = db.Column(db.DATE)

@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class WeeklyMesos(db.Model):
     __tablename__ = "weekly_mesos"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username"))
+    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username", ondelete="CASCADE"))
     first_day_of_bossing_week = db.Column(db.DATE)
     ursus = db.Column(db.BIGINT, default=0)
     tour = db.Column(db.BIGINT, default=0)

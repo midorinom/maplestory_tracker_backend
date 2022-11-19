@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class UserWorldShops(db.Model):
     __tablename__ = "user_world_shops"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username"))
+    username = db.Column(db.VARCHAR(20), db.ForeignKey("users.username", ondelete="CASCADE"))
     currency = db.Column(db.VARCHAR(20))
     item = db.Column(db.VARCHAR(30))
     cost = db.Column(db.SMALLINT)
@@ -36,7 +36,7 @@ user_world_shops_schema = UserWorldShopsSchema()
 class UserCharacterShops(db.Model):
     __tablename__ = "user_character_shops"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
+    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid", ondelete="CASCADE"))
     currency = db.Column(db.VARCHAR(20))
     item = db.Column(db.VARCHAR(30))
     cost = db.Column(db.SMALLINT)

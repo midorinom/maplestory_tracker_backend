@@ -7,7 +7,7 @@ from marshmallow import Schema, fields
 class Bossing(db.Model):
     __tablename__ = "bossing"
     uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid"))
+    character = db.Column(UUID(as_uuid=True), db.ForeignKey("characters.uuid", ondelete="CASCADE"))
     first_day_of_bossing_week = db.Column(db.DATE)
     is_current_week = db.Column(db.BOOLEAN, default=True)
     bossing_list = db.Column(db.TEXT)

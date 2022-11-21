@@ -114,3 +114,36 @@ def update_dailies():
             "message": "an error has occured when updating dailies"
         }
         return jsonify(response), 400
+
+
+# Get Prev Dailies
+@dailies_blueprint.post("/dailies/get-prev")
+def get_prev_dailies():
+    json_data = request.get_json()
+
+    try:
+        data = dailies_schema.load(json_data)
+
+        prev_dailies = dailies_schema.dump(Dailies.query.filter(Dailies.character == data["character"],
+                                                           Dailies.is_current_day == False), many=True)
+
+        if len(prev_dailies) == 0:
+            prev_dailies = None
+        else:
+            prev_dailies = prev_dailies[0]
+
+        response = {
+            "message": "Got prev dailies",
+            "dailies": prev_dailies
+        }
+
+        # Return response
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting prev dailies"
+        }
+        return jsonify(response), 400

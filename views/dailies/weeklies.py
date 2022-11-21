@@ -130,3 +130,36 @@ def update_weeklies():
             "message": "an error has occured when updating weeklies"
         }
         return jsonify(response), 400
+
+
+# Get Prev Weeklies
+@weeklies_blueprint.post("/weeklies/get-prev")
+def get_prev_weeklies():
+    json_data = request.get_json()
+
+    try:
+        data = weeklies_schema.load(json_data)
+
+        prev_weeklies = weeklies_schema.dump(Weeklies.query.filter(Weeklies.character == data["character"],
+                                                                   Weeklies.is_current_week == False), many=True)
+
+        if len(prev_weeklies) == 0:
+            prev_weeklies = None
+        else:
+            prev_weeklies = prev_weeklies[0]
+
+        response = {
+            "message": "Got prev weeklies",
+            "weeklies": prev_weeklies
+        }
+
+        # Return response
+        return jsonify(response), 200
+
+    except Exception as err:
+        print(err)
+
+        response = {
+            "message": "an error has occured when getting prev weeklies"
+        }
+        return jsonify(response), 400

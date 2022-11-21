@@ -216,7 +216,8 @@ def get_characters_tracking():
 
         # Check if there is a main character
         main = characters_schema.dump(Characters.query.filter(
-            Characters.username == json_data["username"], Characters.is_main == True), many=True)
+            Characters.username == json_data["username"], Characters.is_main == True,
+            Characters.tracking.contains(json_data["tracking"])), many=True)
         if len(main) > 0:
             main = main[0]
             main["class_name"] = main["class_name"].title()

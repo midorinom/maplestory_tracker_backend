@@ -5,7 +5,6 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-
 # Configs and declaring variables
 load_dotenv()
 
@@ -20,6 +19,7 @@ migrate = Migrate(app, db)
 
 
 # Register models blueprints
+
 from models.others.Enums import models_enums_blueprint
 from models.others.NonRelational import non_relational_blueprint
 

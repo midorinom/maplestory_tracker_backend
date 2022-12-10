@@ -1,5 +1,7 @@
 from app import db
 from flask import Blueprint
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
 from marshmallow import Schema, fields
 
 
@@ -21,7 +23,8 @@ class WeekliesDefault(db.Model):
 # Bosses
 class Bosses(db.Model):
     __tablename__ = "bosses"
-    id = db.Column(db.SMALLINT, primary_key=True)
+    uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = db.Column(db.SMALLINT)
     region = db.Column(db.VARCHAR(20), db.ForeignKey("roles_enum.roles"))
     name = db.Column(db.VARCHAR(20))
     crystal = db.Column(db.BIGINT)

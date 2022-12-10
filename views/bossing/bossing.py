@@ -90,10 +90,10 @@ def get_bossing():
                     hardest_boss = 3
 
                 # Using role to filter the region, query from the bosses table and construct a bossing_list
-                    bosses = Bosses.query.filter(
-                        Bosses.region == role, Bosses.id <= hardest_boss).with_entities(Bosses.name)
-                    bosses = [element.name for element in bosses]
-                    bossing_list = "@".join(bosses)
+                bosses = Bosses.query.filter(
+                    Bosses.region == role, Bosses.id <= hardest_boss).with_entities(Bosses.name)
+                bosses = [element.name for element in bosses]
+                bossing_list = "@".join(bosses)
 
             # Make an entry for this week
             new_bossing = Bossing(character=data["character"], first_day_of_bossing_week=first_day_of_bossing_week,

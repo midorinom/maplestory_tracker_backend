@@ -44,13 +44,15 @@ def get_bossing():
 
         # Check if there is an existing entry for this week. If so, add it to the response
         bossing = bossing_schema.dump(Bossing.query.filter(
-            Bossing.character == data["character"], Bossing.first_day_of_bossing_week == first_day_of_bossing_week))
+            Bossing.character == data["character"], Bossing.first_day_of_bossing_week == first_day_of_bossing_week),
+            many=True)
 
         if len(bossing) > 0:
             response["bossing"] = bossing[0]
         else:
             # Look up the existing entries
-            existing_bossing = bossing_schema.dump(Bossing.query.filter(Bossing.character == data["character"]))
+            existing_bossing = bossing_schema.dump(Bossing.query.filter(
+                Bossing.character == data["character"]), many=True)
 
             # Index will be 0 if there is only 1 existing entry
             index = 0

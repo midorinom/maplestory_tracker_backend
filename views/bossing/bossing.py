@@ -86,13 +86,13 @@ def get_bossing():
                 # Set a hardest_boss value based on the character's level
                 if level < 235:
                     # Up to Chaos Vellum
-                    hardest_boss = 2
+                    hardest_boss = 9
                 else:
                     # Up to Normal Damien
-                    hardest_boss = 3
+                    hardest_boss = 14
 
                 # Using role to filter the region, query from the bosses table and construct a bossing_list
-                bosses = Bosses.query.filter(
+                bosses = Bosses.query.order_by(Bosses.id.desc()).filter(
                     Bosses.region == role, Bosses.id <= hardest_boss).with_entities(Bosses.name)
                 bosses = [element.name for element in bosses]
                 bossing_list = "@".join(bosses)
@@ -120,20 +120,23 @@ def get_bossing():
 @bossing_blueprint.patch("/bossing/update")
 def update_bossing():
     json_data = request.get_json()
+    data = json_data
 
     try:
-        # Using role to filter the region, query from the bosses table and construct a bossing_list
-        bosses = Bosses.query.filter(
-            Bosses.region == json_data["role"], Bosses.id <= json_data["hardest_boss"]).with_entities(Bosses.name)
-        bosses = [element.name for element in bosses]
-        bossing_list = "@".join(bosses)
+        # If changing the hardest boss. If just check/unchecking, this code block doesn't run.
+        if "role" and "hardest_boss" in json_data:
+            # Using role to filter the region, query from the bosses table and construct a bossing_list
+            bosses = Bosses.query.filter(
+                Bosses.region == json_data["role"], Bosses.id <= json_data["hardest_boss"]).with_entities(Bosses.name)
+            bosses = [element.name for element in bosses]
+            bossing_list = "@".join(bosses)
 
-        # Remove role and hardest_boss from json_data, add bossing_list, then load json_data
-        json_data.pop("role")
-        json_data.pop("hardest_boss")
-        json_data["bossing_list"] = bossing_list
+            # Remove role and hardest_boss from json_data, add bossing_list, then load json_data
+            json_data.pop("role")
+            json_data.pop("hardest_boss")
+            json_data["bossing_list"] = bossing_list
 
-        data = bossing_schema.load(json_data)
+            data = bossing_schema.load(json_data)
 
         # Perform the update
         Bossing.query.filter(Bossing.uuid == data["uuid"]).update(
@@ -163,7 +166,7 @@ def get_bosses_name_crystal():
     json_data = request.get_json()
 
     try:
-        bosses = bosses_schema.dump(Bosses.query.filter(
+        bosses = bosses_schema.dump(Bosses.query.order_by(Bosses.id.desc()).filter(
             Bosses.region == json_data["role"], Bosses.id <= json_data["id"]).
                                     with_entities(Bosses.name, Bosses.crystal), many=True)
 

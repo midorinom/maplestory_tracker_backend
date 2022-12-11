@@ -164,7 +164,8 @@ def get_bosses_name_crystal():
 
     try:
         bosses = bosses_schema.dump(Bosses.query.filter(
-            Bosses.region == json_data["role"]).with_entities(Bosses.name, Bosses.crystal), many=True)
+            Bosses.region == json_data["role"], Bosses.id <= json_data["id"]).
+                                    with_entities(Bosses.name, Bosses.crystal), many=True)
 
         response = {
             "message": "Got bosses",
